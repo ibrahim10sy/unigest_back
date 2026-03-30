@@ -1,0 +1,42 @@
+package gestion.scolaire.model;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
+
+
+import lombok.Data;
+
+@Data
+@Entity
+public class Seance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private LocalDate date;
+
+    private LocalTime heureDebut;
+
+    private LocalTime heureFin;
+
+    @Enumerated(EnumType.STRING)
+    private StatutSeance statut;
+    // PLANIFIEE, EN_COURS, TERMINEE
+
+    private LocalDateTime dateCreation;
+    private LocalDateTime dateModification;
+
+    @ManyToOne
+    private Affectation affectation;
+
+    @OneToMany(mappedBy = "seance")
+    @JsonIgnore
+    private List<Appel> appels; 
+}
