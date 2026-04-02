@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import gestion.scolaire.model.Matiere;
 import gestion.scolaire.service.MatiereService;
 
+
 @RestController
 @RequestMapping("/api/matieres")
 public class MatiereController {

@@ -1,13 +1,15 @@
 package gestion.scolaire.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RestController;
 
 import gestion.scolaire.model.Filiere;
+import gestion.scolaire.repository.FiliereRepository;
 import gestion.scolaire.service.FiliereService;
 
 @RestController
@@ -16,6 +18,9 @@ public class FiliereController {
 
     @Autowired
     private FiliereService filiereService;
+
+    @Autowired
+    private FiliereRepository filiereRepository;
 
     // 1️⃣ Ajouter une filière
     @PostMapping
@@ -44,6 +49,8 @@ public class FiliereController {
         return ResponseEntity.ok(filiereService.getFiliereById(id));
     }
 
+
+
     // 5️⃣ Lister toutes les filières
     @GetMapping
     public ResponseEntity<List<Filiere>> getAllFilieres(){
@@ -61,4 +68,22 @@ public class FiliereController {
     public ResponseEntity<List<Filiere>> rechercherParNom(@RequestParam String nom){
         return ResponseEntity.ok(filiereService.rechercherParNom(nom));
     }
+
+
+  @PatchMapping("/{id}/actif")
+public ResponseEntity<?> updateActifFiliere(
+    @PathVariable Long id,
+    @RequestBody Map<String, Boolean> body) {
+
+    Filiere filiere = filiereRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Filière introuvable"));
+
+    filiere.setActif(body.get("actif"));
+    filiereRepository.save(filiere);
+
+    // ✅ On renvoie une Map qui sera transformée en JSON : {"message": "..."}
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Statut filière mis à jour");
+    return ResponseEntity.ok(response);
+}
 }

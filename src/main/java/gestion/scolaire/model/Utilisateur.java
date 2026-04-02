@@ -1,5 +1,7 @@
 package gestion.scolaire.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 
@@ -18,6 +20,8 @@ public abstract class Utilisateur {
     private String prenom;
     private String email;
     private String telephone;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Enumerated(EnumType.STRING)

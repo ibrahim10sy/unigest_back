@@ -1,5 +1,7 @@
 package gestion.scolaire.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,10 +13,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import gestion.scolaire.util.CustomUserDetailService;
 import gestion.scolaire.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+
+
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+
+import org.springframework.security.config.http.SessionCreationPolicy;
+
 
 @Configuration
 @EnableWebSecurity
@@ -48,16 +59,38 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(
-                                                         "/api/auth/login",
-                                                                "/api/v3/api-docs/**",
-                                                                "/api/swagger-ui/**",
-                                                                "/api/swagger-ui.html")
-                                                .permitAll()
+    "/api/auth/login",
+    "/api/admins/**",
+    "/api/v3/api-docs/**",     // Correspond à springdoc.api-docs.path
+    "/api/swagger-ui/**",      // Correspond au dossier des ressources UI
+    "/api/swagger-ui.html",    // Correspond à springdoc.swagger-ui.path
+    "/swagger-ui/**",          // Sécurité au cas où le mapping par défaut persiste
+    "/v3/api-docs/**"
+).permitAll()
 
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(new JwtAuthenticationFilter(customUserDetailsService, jwtUtil),
                                                 UsernamePasswordAuthenticationFilter.class)
                                 .build();
         }
+
+
+
+        @Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    
+    // Autorise TOUTES les origines (http, https, local, online)
+    configuration.setAllowedOriginPatterns(Arrays.asList("*")); 
+    
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+    configuration.setAllowCredentials(true); // Indispensable pour envoyer le Header Authorization
+    configuration.setExposedHeaders(Arrays.asList("Authorization")); // Permet au front de lire le token si besoin
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
 
 }

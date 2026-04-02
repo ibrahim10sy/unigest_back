@@ -3,6 +3,7 @@ package gestion.scolaire.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import gestion.scolaire.model.Enseignant;
@@ -15,9 +16,14 @@ public class EnseignantService {
     @Autowired
     private EnseignantRepository enseignantRepository;
 
+     @Autowired
+    private PasswordEncoder passwordEncoder; // Injecte le bean BCrypt
+
     // Créer
     public Enseignant creerEnseignant(Enseignant enseignant){
-
+        
+         String encodedPassword = passwordEncoder.encode(enseignant.getPassword());
+        enseignant.setPassword(encodedPassword);
         enseignant.setRole(Role.ENSEIGNANT);
         enseignant.setActif(true);
 
@@ -29,7 +35,10 @@ public class EnseignantService {
 
         Enseignant enseignant = enseignantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Enseignant introuvable"));
-
+     if(data.getPassword() != null){
+         String encodedPassword = passwordEncoder.encode(data.getPassword());
+        enseignant.setPassword(encodedPassword);
+     }
         enseignant.setNom(data.getNom());
         enseignant.setPrenom(data.getPrenom());
         enseignant.setEmail(data.getEmail());

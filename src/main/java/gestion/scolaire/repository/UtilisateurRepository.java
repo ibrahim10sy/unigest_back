@@ -13,6 +13,10 @@ import gestion.scolaire.model.Utilisateur;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
 
+    boolean existsByEmail(String email);
+    
+    boolean existsByTelephone(String telephone);
+
     List<Utilisateur> findByRole(Role role);
 
     Optional<Utilisateur> findByEmail(String email);

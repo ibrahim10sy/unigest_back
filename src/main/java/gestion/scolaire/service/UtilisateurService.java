@@ -28,9 +28,18 @@ public class UtilisateurService {
     private EnseignantRepository enseignantRepository;
 
     // Ajouter un utilisateur générique
-    public Utilisateur ajouterUtilisateur(Utilisateur user){
-        return utilisateurRepository.save(user);
+ public Utilisateur ajouterUtilisateur(Utilisateur user){
+
+    if(utilisateurRepository.existsByEmail(user.getEmail())){
+        throw new RuntimeException("Un utilisateur avec cet email existe déjà");
     }
+
+    if(utilisateurRepository.existsByTelephone(user.getTelephone())){
+        throw new RuntimeException("Un utilisateur avec ce téléphone existe déjà");
+    }
+
+    return utilisateurRepository.save(user);
+}
 
     // Modifier un utilisateur
     public Utilisateur modifierUtilisateur(Long id, String nom, String prenom,

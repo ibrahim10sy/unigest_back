@@ -13,6 +13,7 @@ public class EtudiantService {
 
     @Autowired
     private EtudiantRepository etudiantRepository;
+    
 
     public Etudiant creerEtudiant(Etudiant etudiant){
         return etudiantRepository.save(etudiant);

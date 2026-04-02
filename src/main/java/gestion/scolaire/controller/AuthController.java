@@ -39,30 +39,52 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+//     @PostMapping("/login")
+//     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication =
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                loginRequest.getLogin(),
-                                loginRequest.getPassword()
-                        )
-                );
+//         Authentication authentication =
+//                 authenticationManager.authenticate(
+//                         new UsernamePasswordAuthenticationToken(
+//                                 loginRequest.getLogin(),
+//                                 loginRequest.getPassword()
+//                         )
+//                 );
 
-        Utilisateur user = userRepository
-                .findByEmailOrTelephone(
-                        loginRequest.getLogin(),
-                        loginRequest.getLogin()
-                )
-                .orElseThrow();
+//         Utilisateur user = userRepository
+//                 .findByEmailOrTelephone(
+//                         loginRequest.getLogin(),
+//                         loginRequest.getLogin()
+//                 )
+//                 .orElseThrow();
+
+//         Map<String, Object> authData = new HashMap<>();
+//         authData.put("token", jwtUtil.generateToken(user));
+//         authData.put("type", "Bearer");
+
+//         return ResponseEntity.ok(authData);
+//     }
+
+        @PostMapping("/login")
+        public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword())
+        );
+
+        Utilisateur user = userRepository.findByEmailOrTelephone(
+                loginRequest.getLogin(), loginRequest.getLogin()
+        ).orElseThrow();
 
         Map<String, Object> authData = new HashMap<>();
         authData.put("token", jwtUtil.generateToken(user));
         authData.put("type", "Bearer");
+        
+        // Ajout des infos utilisateur
+        authData.put("nom", user.getNom());
+        authData.put("prenom", user.getPrenom());
+        authData.put("role", user.getRole());
 
         return ResponseEntity.ok(authData);
-    }
+}
 
    @GetMapping("/me")
     public ResponseEntity<UserView> getCurrentUser(Authentication authentication) {
