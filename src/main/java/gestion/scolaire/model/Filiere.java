@@ -22,6 +22,10 @@ public class Filiere {
 
     private boolean actif = true;
 
+    @ManyToOne
+    @JoinColumn(name = "niveau_id")
+    private Niveau niveau; // La filière appartient désormais à un niveau
+
     @OneToMany(mappedBy = "filiere")
     @JsonIgnore
     private List<Classe> classes;

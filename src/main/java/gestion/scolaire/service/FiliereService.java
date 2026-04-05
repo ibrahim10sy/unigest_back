@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gestion.scolaire.model.Filiere;
+import gestion.scolaire.model.Niveau;
 import gestion.scolaire.repository.FiliereRepository;
+import gestion.scolaire.repository.NiveauRepository;
 
 @Service
 public class FiliereService {
@@ -14,21 +16,38 @@ public class FiliereService {
     @Autowired
     private FiliereRepository filiereRepository;
 
+    @Autowired
+    private NiveauRepository niveauRepository;
+
     // Ajouter une filière
-    public Filiere ajouterFiliere(String nom){
+   // Ajouter une filière liée à un niveau
+    public Filiere ajouterFiliere(String nom, Long niveauId) {
+        // On récupère le niveau parent
+        Niveau niveau = niveauRepository.findById(niveauId)
+                .orElseThrow(() -> new RuntimeException("Niveau introuvable avec l'ID : " + niveauId));
+
         Filiere filiere = new Filiere();
         filiere.setNom(nom);
         filiere.setActif(true);
+        filiere.setNiveau(niveau); // On lie la filière au niveau
+        
         return filiereRepository.save(filiere);
     }
 
     // Modifier une filière
-    public Filiere modifierFiliere(Long id, String nom, Boolean actif){
+    public Filiere modifierFiliere(Long id, String nom, Boolean actif, Long niveauId) {
         Filiere filiere = filiereRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Filière introuvable"));
 
-        if(nom != null) filiere.setNom(nom);
-        if(actif != null) filiere.setActif(actif);
+        if (nom != null) filiere.setNom(nom);
+        if (actif != null) filiere.setActif(actif);
+        
+        // Si on change le niveau de la filière
+        if (niveauId != null) {
+            Niveau niveau = niveauRepository.findById(niveauId)
+                    .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
+            filiere.setNiveau(niveau);
+        }
 
         return filiereRepository.save(filiere);
     }

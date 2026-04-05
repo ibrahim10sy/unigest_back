@@ -10,16 +10,21 @@ import gestion.scolaire.model.Classe;
 import gestion.scolaire.model.Etudiant;
 import gestion.scolaire.model.Filiere;
 import gestion.scolaire.model.Inscription;
+import gestion.scolaire.model.Niveau;
 import gestion.scolaire.repository.AnneeScolaireRepository;
 import gestion.scolaire.repository.ClasseRepository;
 import gestion.scolaire.repository.FiliereRepository;
 import gestion.scolaire.repository.InscriptionRepository;
+import gestion.scolaire.repository.NiveauRepository;
 
 @Service
 public class ClasseService {
 
     @Autowired
     private ClasseRepository classeRepository;
+
+    @Autowired
+    private NiveauRepository niveauRepository;
 
     @Autowired
     private FiliereRepository filiereRepository;
@@ -32,10 +37,12 @@ public class ClasseService {
 
 
     // 1️⃣ Créer une classe
-    public Classe creerClasse(String nom, String niveau, Long filiereId){
+    public Classe creerClasse(String nom, Long niveauId, Long filiereId){
 
         Filiere filiere = filiereRepository.findById(filiereId)
                 .orElseThrow(() -> new RuntimeException("Filière introuvable"));
+        Niveau niveau = niveauRepository.findById(niveauId)
+                .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
 
         Classe classe = new Classe();
         classe.setNom(nom);
@@ -47,10 +54,13 @@ public class ClasseService {
 
 
     // 2️⃣ Modifier une classe
-    public Classe modifierClasse(Long id, String nom, String niveau, Long filiereId){
+    public Classe modifierClasse(Long id, String nom, Long niveauId, Long filiereId){
 
         Classe classe = classeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+
+                 Niveau niveau = niveauRepository.findById(niveauId)
+                .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
 
         if(nom != null){
             classe.setNom(nom);

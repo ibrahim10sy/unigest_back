@@ -24,6 +24,7 @@ public class Affectation {
 
     @ManyToOne
     private Classe classe;
+    
 
     @OneToMany(mappedBy = "affectation")
     @JsonIgnore

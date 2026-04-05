@@ -11,4 +11,5 @@ import gestion.scolaire.model.Filiere;
 public interface FiliereRepository extends JpaRepository<Filiere, Long> {
     List<Filiere> findByNomContainingIgnoreCase(String nom);
     List<Filiere> findByActifTrue();
+    List<Filiere> findByNiveauId(Long niveauId);
 }

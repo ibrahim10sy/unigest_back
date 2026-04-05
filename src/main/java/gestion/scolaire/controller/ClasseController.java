@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
 import gestion.scolaire.model.Classe;
@@ -24,10 +22,10 @@ public class ClasseController {
     @PostMapping
     public ResponseEntity<Classe> creerClasse(
             @RequestParam String nom,
-            @RequestParam String niveau,
+            @RequestParam Long niveauId,
             @RequestParam Long filiereId) {
 
-        Classe classe = classeService.creerClasse(nom, niveau, filiereId);
+        Classe classe = classeService.creerClasse(nom, niveauId, filiereId);
         return ResponseEntity.ok(classe);
     }
 
@@ -37,10 +35,10 @@ public class ClasseController {
     public ResponseEntity<Classe> modifierClasse(
             @PathVariable Long id,
             @RequestParam(required = false) String nom,
-            @RequestParam(required = false) String niveau,
+            @RequestParam(required = false) Long niveauId,
             @RequestParam(required = false) Long filiereId) {
 
-        Classe classe = classeService.modifierClasse(id, nom, niveau, filiereId);
+        Classe classe = classeService.modifierClasse(id, nom, niveauId, filiereId);
         return ResponseEntity.ok(classe);
     }
 

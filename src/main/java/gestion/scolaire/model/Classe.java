@@ -18,7 +18,10 @@ public class Classe {
     private Long id;
 
     private String nom;     // ex: L1 Informatique
-    private String niveau;  // ex: L1, L2, L3
+
+    @ManyToOne
+    @JoinColumn(name = "niveau_id")
+    private Niveau niveau; // Relation dynamique ici
 
     @ManyToOne
     private Filiere filiere;

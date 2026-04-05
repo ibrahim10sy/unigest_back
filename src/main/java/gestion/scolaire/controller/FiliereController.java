@@ -24,17 +24,20 @@ public class FiliereController {
 
     // 1️⃣ Ajouter une filière
     @PostMapping
-    public ResponseEntity<Filiere> ajouterFiliere(@RequestParam String nom){
-        return ResponseEntity.ok(filiereService.ajouterFiliere(nom));
+    public ResponseEntity<Filiere> ajouterFiliere(@RequestParam String nom,@RequestParam Long niveauId){
+        return ResponseEntity.ok(filiereService.ajouterFiliere(nom,niveauId));
     }
 
     // 2️⃣ Modifier une filière
     @PutMapping("/{id}")
     public ResponseEntity<Filiere> modifierFiliere(@PathVariable Long id,
                                                    @RequestParam(required = false) String nom,
-                                                   @RequestParam(required = false) Boolean actif){
-        return ResponseEntity.ok(filiereService.modifierFiliere(id, nom, actif));
+                                                   @RequestParam(required = false) Boolean actif,
+                                                 @RequestParam Long niveauId
+                                                ){
+        return ResponseEntity.ok(filiereService.modifierFiliere(id, nom, actif,niveauId));
     }
+    
 
     // 3️⃣ Supprimer une filière
     @DeleteMapping("/{id}")
@@ -68,6 +71,11 @@ public class FiliereController {
     public ResponseEntity<List<Filiere>> rechercherParNom(@RequestParam String nom){
         return ResponseEntity.ok(filiereService.rechercherParNom(nom));
     }
+
+    @GetMapping("/par-niveau/{niveauId}")
+public List<Filiere> getFilieresParNiveau(@PathVariable Long niveauId) {
+    return filiereRepository.findByNiveauId(niveauId);
+}
 
 
   @PatchMapping("/{id}/actif")
