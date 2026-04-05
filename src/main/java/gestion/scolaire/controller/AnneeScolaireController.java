@@ -57,4 +57,6 @@ public class AnneeScolaireController {
     public AnneeScolaire activer(@PathVariable Long id) {
         return service.activerAnnee(id);
     }
+
+    
 }

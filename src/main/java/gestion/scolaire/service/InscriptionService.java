@@ -50,6 +50,8 @@ public class InscriptionService {
         return inscriptionRepository.save(inscription);
     }
 
+
+
     public List<Etudiant> getEtudiantsParClasseEtAnnee(Long classeId, Long anneeId) {
 
         Classe classe = classeRepository.findById(classeId)
@@ -63,6 +65,13 @@ public class InscriptionService {
         return inscriptions.stream()
                 .map(Inscription::getEtudiant)
                 .toList();
+    }
+
+    public List<Inscription> getAll() {
+
+        List<Inscription> inscriptions = inscriptionRepository.findAll();
+
+        return inscriptions;
     }
 
     public List<Etudiant> getEtudiantsParClasse(Long classeId) {
@@ -82,7 +91,9 @@ public class InscriptionService {
 
     public Inscription modifierInscription(Long id,
             Long classeId,
-            Long anneeId) {
+            Long anneeId,
+            double montant
+        ) {
 
         Inscription inscription = inscriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
@@ -95,6 +106,7 @@ public class InscriptionService {
 
         inscription.setClasse(classe);
         inscription.setAnneeScolaire(annee);
+        inscription.setMontantTotal(montant);
 
         return inscriptionRepository.save(inscription);
     }

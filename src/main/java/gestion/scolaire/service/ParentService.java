@@ -19,6 +19,7 @@ public class ParentService {
     public Parent creerParent(Parent parent){
         parent.setRole(Role.PARENT);
         parent.setActif(true);
+        parent.setTelephone(parent.getTelephone());
         return parentRepository.save(parent);
     }
 

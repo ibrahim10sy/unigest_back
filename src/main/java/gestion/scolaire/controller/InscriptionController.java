@@ -44,19 +44,26 @@ public class InscriptionController {
         return ResponseEntity.ok(inscriptionService.getInscription(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<Inscription>> getAllInscription(){
+        return ResponseEntity.ok(inscriptionService.getAll());
+    }
+
 
     // 3️⃣ Modifier une inscription
     @PutMapping("/{id}")
     public ResponseEntity<Inscription> modifierInscription(
             @PathVariable Long id,
             @RequestParam Long classeId,
-            @RequestParam Long anneeId){
+            @RequestParam Long anneeId,
+            @RequestParam double montant
+        ){
 
         return ResponseEntity.ok(
                 inscriptionService.modifierInscription(
                         id,
                         classeId,
-                        anneeId
+                        anneeId, montant
                 )
         );
     }

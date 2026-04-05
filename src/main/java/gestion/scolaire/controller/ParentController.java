@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
 import gestion.scolaire.model.Parent;
@@ -44,12 +43,12 @@ public class ParentController {
 
 
     @Operation(summary = "Supprimer un parent")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerParent(@PathVariable Long id){
-
-        parentService.supprimerParent(id);
-        return ResponseEntity.ok("Parent supprimé");
-    }
+  @DeleteMapping("/{id}")
+public ResponseEntity<Void> supprimerParent(@PathVariable Long id){
+    parentService.supprimerParent(id);
+    // On renvoie un statut 204 (No Content) sans corps de texte
+    return ResponseEntity.noContent().build(); 
+}
 
 
     @Operation(summary = "Récupérer un parent par ID")
