@@ -3,6 +3,9 @@ package gestion.scolaire.model;
 public enum ModePaiement {
     ESPECES,
     VIREMENT,
-    MOBILE_MONEY,
+    ORANGE_MONEY,
+    MOOV_MONEY,
+    SAMA_MONEY,
+    WAVE,
     CHEQUE
 }

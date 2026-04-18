@@ -1,5 +1,6 @@
 package gestion.scolaire.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,27 @@ public class EtudiantService {
     private EtudiantRepository etudiantRepository;
     
 
-    public Etudiant creerEtudiant(Etudiant etudiant){
-        return etudiantRepository.save(etudiant);
-    }
+   public Etudiant creerEtudiant(Etudiant etudiant){
+
+    // Générer le matricule automatiquement
+    String matricule = genererMatricule();
+    etudiant.setMatricule(matricule);
+
+    return etudiantRepository.save(etudiant);
+}
+
+    public String genererMatricule() {
+    int annee = LocalDate.now().getYear();
+
+    // Compter le nombre d'étudiants déjà existants
+    long count = etudiantRepository.count();
+
+    // Incrément
+    long numero = count + 1;
+
+    // Formatage avec 4 chiffres
+    return "ETU-" + annee + "-" + String.format("%04d", numero);
+}
 
     public List<Etudiant> listerEtudiants(){
         return etudiantRepository.findAll();
@@ -36,6 +55,8 @@ public class EtudiantService {
         e.setPrenom(data.getPrenom());
         e.setEmail(data.getEmail());
         e.setTelephone(data.getTelephone());
+        e.setDateNaissance(data.getDateNaissance());
+        e.setParent(data.getParent());
 
         return etudiantRepository.save(e);
     }

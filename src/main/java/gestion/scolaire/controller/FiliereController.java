@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import gestion.scolaire.dto.AjoutMatieresDTO;
 import gestion.scolaire.model.Filiere;
 import gestion.scolaire.repository.FiliereRepository;
 import gestion.scolaire.service.FiliereService;
@@ -38,6 +39,7 @@ public class FiliereController {
         return ResponseEntity.ok(filiereService.modifierFiliere(id, nom, actif,niveauId));
     }
     
+ 
 
     // 3️⃣ Supprimer une filière
     @DeleteMapping("/{id}")

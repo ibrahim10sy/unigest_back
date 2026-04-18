@@ -46,6 +46,7 @@ public class InscriptionService {
         inscription.setAnneeScolaire(annee);
         inscription.setDateInscription(LocalDate.now());
         inscription.setMontantTotal(montant);
+        inscription.setStatut("INSCRIT");
 
         return inscriptionRepository.save(inscription);
     }

@@ -15,22 +15,19 @@ public class MatiereService {
     private MatiereRepository matiereRepository;
 
     // Ajouter une matière
-    public Matiere ajouterMatiere(String nom, double coefficient){
-        Matiere matiere = new Matiere();
-        matiere.setNom(nom);
-        matiere.setCoefficient(coefficient);
+    public Matiere ajouterMatiere(Matiere matiere ){
+        
         return matiereRepository.save(matiere);
     }
 
     // Modifier une matière
-    public Matiere modifierMatiere(Long id, String nom, Double coefficient){
-        Matiere matiere = matiereRepository.findById(id)
+    public Matiere modifierMatiere(Long id, Matiere matiere){
+        Matiere m = matiereRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Matière introuvable"));
+        // m.setCoefficient(matiere.getCoefficient());
+        m.setNom(matiere.getNom());
 
-        if(nom != null) matiere.setNom(nom);
-        if(coefficient != null) matiere.setCoefficient(coefficient);
-
-        return matiereRepository.save(matiere);
+        return matiereRepository.save(m);
     }
 
     // Supprimer une matière

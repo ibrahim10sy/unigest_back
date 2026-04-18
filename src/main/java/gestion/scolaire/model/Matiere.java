@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
-
 import lombok.Data;
 
 @Data
@@ -18,9 +17,13 @@ public class Matiere {
     private Long id;
 
     private String nom;
-    private double coefficient;
 
-    @OneToMany(mappedBy = "matiere")
+    private boolean statut = true;
+
+    @ManyToMany(mappedBy = "matieres")
     @JsonIgnore
     private List<Affectation> affectations;
+
+    @OneToMany(mappedBy = "matiere")
+private List<ClasseMatiere> classeMatieres;
 }

@@ -1,7 +1,5 @@
 package gestion.scolaire.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import gestion.scolaire.model.ModePaiement;
 import gestion.scolaire.model.Paiement;
 import gestion.scolaire.service.PaiementService;
@@ -32,11 +30,10 @@ public class PaiementController {
     public ResponseEntity<Paiement> effectuerPaiement(
             @Parameter(description = "ID de l'inscription") @RequestParam Long inscriptionId,
             @Parameter(description = "Montant payé") @RequestParam double montant,
-            @Parameter(description = "Mode de paiement") @RequestParam ModePaiement mode,
-            @Parameter(description = "Référence du paiement") @RequestParam String reference){
+            @Parameter(description = "Mode de paiement") @RequestParam ModePaiement mode){
 
         return ResponseEntity.ok(
-                paiementService.effectuerPaiement(inscriptionId, montant, mode, reference)
+                paiementService.effectuerPaiement(inscriptionId, montant, mode)
         );
     }
 
@@ -46,12 +43,12 @@ public class PaiementController {
     @PutMapping("/{id}")
     public ResponseEntity<Paiement> modifierPaiement(
             @PathVariable Long id,
+            @RequestParam Long inscriptionId,
             @RequestParam double montant,
-            @RequestParam ModePaiement mode,
-            @RequestParam String reference){
+            @RequestParam ModePaiement mode){
 
         return ResponseEntity.ok(
-                paiementService.modifierPaiement(id, montant, mode, reference)
+                paiementService.modifierPaiement(id,inscriptionId, montant, mode)
         );
     }
 

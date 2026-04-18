@@ -22,8 +22,9 @@ public class AnneeScolaire {
 
     private LocalDate dateDebut;
     private LocalDate dateFin;
+    private LocalDate dateAjout;
 
-    private boolean active;
+    private boolean active = true;
 
     @OneToMany(mappedBy = "anneeScolaire")
     @JsonIgnore

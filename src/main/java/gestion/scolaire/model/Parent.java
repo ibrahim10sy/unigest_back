@@ -13,6 +13,7 @@ import lombok.Data;
 @Entity
 public class Parent extends Utilisateur {
 
+    private String adresse;
 
     @OneToMany(mappedBy = "parent")
     @JsonIgnore

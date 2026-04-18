@@ -1,7 +1,5 @@
 package gestion.scolaire.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import gestion.scolaire.model.Seance;
 import gestion.scolaire.service.SeanceService;
 
@@ -29,10 +27,12 @@ public class SeanceController {
     @PostMapping("/demarrer")
     public ResponseEntity<Seance> demarrerSeance(
             @Parameter(description = "ID de l'affectation")
-            @RequestParam Long affectationId){
+            @RequestParam Long affectationId,
+            @RequestParam String matiere
+        ){
 
         return ResponseEntity.ok(
-                seanceService.demarrerSeance(affectationId)
+                seanceService.demarrerSeance(affectationId, matiere)
         );
     }
 
@@ -57,7 +57,6 @@ public class SeanceController {
                 seanceService.getSeancesParDate(date)
         );
     }
-
 
     @Operation(summary = "Récupérer les séances par affectation")
     @GetMapping("/affectation/{affectationId}")
@@ -88,6 +87,15 @@ public class SeanceController {
 
         return ResponseEntity.ok(
                 seanceService.getSeancesEnCours()
+        );
+    }
+   
+    @Operation(summary = "Récupérer toutes les séances")
+    @GetMapping
+    public ResponseEntity<List<Seance>> getSeances(){
+
+        return ResponseEntity.ok(
+                seanceService.getSeances()
         );
     }
 

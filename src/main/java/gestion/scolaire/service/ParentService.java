@@ -20,6 +20,9 @@ public class ParentService {
         parent.setRole(Role.PARENT);
         parent.setActif(true);
         parent.setTelephone(parent.getTelephone());
+        parent.setAdresse(parent.getAdresse());
+        parent.setNom(parent.getNom());
+        parent.setPrenom(parent.getPrenom());
         return parentRepository.save(parent);
     }
 
@@ -33,6 +36,7 @@ public class ParentService {
         parent.setPrenom(data.getPrenom());
         parent.setEmail(data.getEmail());
         parent.setTelephone(data.getTelephone());
+        parent.setAdresse(data.getAdresse());
 
         return parentRepository.save(parent);
     }

@@ -24,13 +24,14 @@ public class SeanceService {
     private AffectationRepository affectationRepository;
 
     // 1️⃣ Démarrer une séance
-    public Seance demarrerSeance(Long affectationId){
+    public Seance demarrerSeance(Long affectationId,String matiere){
 
         Affectation affectation = affectationRepository.findById(affectationId)
                 .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
 
         Seance seance = new Seance();
         seance.setAffectation(affectation);
+        seance.setMatiere(matiere);
         seance.setDate(LocalDate.now());
         seance.setHeureDebut(LocalTime.now());
         seance.setStatut(StatutSeance.EN_COURS);
@@ -69,5 +70,9 @@ public class SeanceService {
     // 6️⃣ Récupérer toutes les séances en cours
     public List<Seance> getSeancesEnCours(){
         return seanceRepository.findByStatut(StatutSeance.EN_COURS);
+    }
+   
+    public List<Seance> getSeances(){
+        return seanceRepository.findAll();
     }
 }

@@ -1,12 +1,15 @@
 package gestion.scolaire.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gestion.scolaire.model.AnneeScolaire;
 import gestion.scolaire.repository.AnneeScolaireRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AnneeScolaireService {
@@ -15,17 +18,21 @@ public class AnneeScolaireService {
     private AnneeScolaireRepository anneeScolaireRepository;
 
     // Créer une année scolaire
-    public AnneeScolaire creerAnnee(AnneeScolaire annee){
+    @Transactional
+    public AnneeScolaire creerAnnee(AnneeScolaire annee) {
 
-        if(annee.isActive()){
-            desactiverToutesLesAnnees();
-        }
+        // 🔴 Désactiver toutes les années existantes
+        anneeScolaireRepository.desactiverToutes();
+
+        // 🟢 Activer la nouvelle
+        annee.setActive(true);
+       annee.setDateAjout(LocalDate.now());
 
         return anneeScolaireRepository.save(annee);
     }
 
     // Modifier une année scolaire
-    public AnneeScolaire modifierAnnee(Long id, AnneeScolaire data){
+    public AnneeScolaire modifierAnnee(Long id, AnneeScolaire data) {
 
         AnneeScolaire annee = anneeScolaireRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Année scolaire introuvable"));
@@ -34,7 +41,7 @@ public class AnneeScolaireService {
         annee.setDateDebut(data.getDateDebut());
         annee.setDateFin(data.getDateFin());
 
-        if(data.isActive()){
+        if (data.isActive()) {
             desactiverToutesLesAnnees();
             annee.setActive(true);
         }
@@ -43,29 +50,31 @@ public class AnneeScolaireService {
     }
 
     // Supprimer
-    public void supprimerAnnee(Long id){
+    public void supprimerAnnee(Long id) {
         anneeScolaireRepository.deleteById(id);
     }
 
     // Trouver par ID
-    public AnneeScolaire getAnneeById(Long id){
+    public AnneeScolaire getAnneeById(Long id) {
         return anneeScolaireRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Année scolaire introuvable"));
     }
 
     // Lister toutes les années
-    public List<AnneeScolaire> getAllAnnees(){
-        return anneeScolaireRepository.findAll();
-    }
+   public List<AnneeScolaire> getAllAnnees() {
+    return anneeScolaireRepository.findAll(
+        Sort.by(Sort.Direction.DESC, "dateAjout")
+    );
+}
 
     // Récupérer l'année active
-    public AnneeScolaire getAnneeActive(){
+    public AnneeScolaire getAnneeActive() {
         return anneeScolaireRepository.findByActiveTrue()
                 .orElseThrow(() -> new RuntimeException("Aucune année scolaire active"));
     }
 
     // Activer une année scolaire
-    public AnneeScolaire activerAnnee(Long id){
+    public AnneeScolaire activerAnnee(Long id) {
 
         desactiverToutesLesAnnees();
 
@@ -76,10 +85,9 @@ public class AnneeScolaireService {
 
         return anneeScolaireRepository.save(annee);
     }
-    // Desactiver une année scolaire
-    public AnneeScolaire desactiverAnnee(Long id){
 
-        desactiverToutesLesAnnees();
+    // Desactiver une année scolaire
+    public AnneeScolaire desactiverAnnee(Long id) {
 
         AnneeScolaire annee = anneeScolaireRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Année scolaire introuvable"));
@@ -90,11 +98,11 @@ public class AnneeScolaireService {
     }
 
     // Désactiver toutes les années
-    private void desactiverToutesLesAnnees(){
+    private void desactiverToutesLesAnnees() {
 
         List<AnneeScolaire> annees = anneeScolaireRepository.findAll();
 
-        for(AnneeScolaire a : annees){
+        for (AnneeScolaire a : annees) {
             a.setActive(false);
         }
 

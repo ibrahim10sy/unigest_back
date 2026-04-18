@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
-
 import lombok.Data;
 
 @Data
@@ -17,11 +16,7 @@ public class Classe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;     // ex: L1 Informatique
-
-    @ManyToOne
-    @JoinColumn(name = "niveau_id")
-    private Niveau niveau; // Relation dynamique ici
+    private String nom; // ex: L1 Informatique
 
     @ManyToOne
     private Filiere filiere;
@@ -32,5 +27,8 @@ public class Classe {
 
     @OneToMany(mappedBy = "classe")
     @JsonIgnore
-    private List<Inscription> inscriptions; 
+    private List<Inscription> inscriptions;
+
+    @OneToMany(mappedBy = "classe", cascade = CascadeType.ALL)
+    private List<ClasseMatiere> classeMatieres;
 }

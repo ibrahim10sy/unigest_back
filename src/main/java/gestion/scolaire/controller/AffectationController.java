@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import gestion.scolaire.dto.AffectationDTO;
 import gestion.scolaire.model.Affectation;
+import gestion.scolaire.model.Matiere;
 import gestion.scolaire.service.AffectationService;
 
 @RestController
@@ -21,26 +23,34 @@ public class AffectationController {
     @PostMapping
     public ResponseEntity<Affectation> ajouterAffectation(
             @RequestParam Long enseignantId,
-            @RequestParam Long matiereId,
+            @RequestParam  List<Long> matiereIds,
             @RequestParam Long classeId){
 
         Affectation affectation =
-                affectationService.ajouterAffectation(enseignantId, matiereId, classeId);
+                affectationService.ajouterAffectation(enseignantId, matiereIds, classeId);
 
         return ResponseEntity.ok(affectation);
     }
 
+
+    @GetMapping
+    public ResponseEntity<List<Affectation>> getAllMatieres(){
+
+        return ResponseEntity.ok(
+                affectationService.getAll()
+        );
+    }
 
     // 2️⃣ Modifier une affectation
     @PutMapping("/{id}")
     public ResponseEntity<Affectation> modifierAffectation(
             @PathVariable Long id,
             @RequestParam(required = false) Long enseignantId,
-            @RequestParam(required = false) Long matiereId,
+            @RequestParam(required = false)  List<Long> matiereIds,
             @RequestParam(required = false) Long classeId){
 
         Affectation affectation =
-                affectationService.modifierAffectation(id, enseignantId, matiereId, classeId);
+                affectationService.modifierAffectation(id, enseignantId, matiereIds, classeId);
 
         return ResponseEntity.ok(affectation);
     }
@@ -63,6 +73,10 @@ public class AffectationController {
         return ResponseEntity.ok(affectationService.getAffectationById(id));
     }
 
+    //  @GetMapping("/{id}/details")
+    // public ResponseEntity<AffectationDTO> getAffectationDetailById(@PathVariable Long id) {
+    //     return ResponseEntity.ok(affectationService.getAffectationDetailById(id));
+    // }
 
     // 5️⃣ Affectations d'un enseignant
     @GetMapping("/enseignant/{enseignantId}")
@@ -87,14 +101,14 @@ public class AffectationController {
 
 
     // 7️⃣ Affectations d'une matière
-    @GetMapping("/matiere/{matiereId}")
-    public ResponseEntity<List<Affectation>> getAffectationsParMatiere(
-            @PathVariable Long matiereId){
+    // @GetMapping("/matiere/{matiereId}")
+    // public ResponseEntity<List<Affectation>> getAffectationsParMatiere(
+    //         @PathVariable Long matiereId){
 
-        return ResponseEntity.ok(
-                affectationService.getAffectationsParMatiere(matiereId)
-        );
-    }
+    //     return ResponseEntity.ok(
+    //             affectationService.getAffectationsParMatiere(matiereId)
+    //     );
+    // }
 
 
     // 8️⃣ Affectations d'une classe pour une année scolaire

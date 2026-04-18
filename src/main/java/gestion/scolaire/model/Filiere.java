@@ -21,10 +21,10 @@ public class Filiere {
     private String nom;
 
     private boolean actif = true;
-
+    
     @ManyToOne
     @JoinColumn(name = "niveau_id")
-    private Niveau niveau; // La filière appartient désormais à un niveau
+    private Niveau niveau; 
 
     @OneToMany(mappedBy = "filiere")
     @JsonIgnore

@@ -33,6 +33,7 @@ public class Seance {
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
 
+    private String matiere;
     @ManyToOne
     private Affectation affectation;
 

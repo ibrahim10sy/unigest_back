@@ -1,10 +1,12 @@
 package gestion.scolaire.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gestion.scolaire.dto.AffectationDTO;
 import gestion.scolaire.model.Affectation;
 import gestion.scolaire.model.Classe;
 import gestion.scolaire.model.Enseignant;
@@ -30,52 +32,72 @@ public class AffectationService {
     private MatiereRepository matiereRepository;
 
     // 1️⃣ Ajouter une affectation
-    public Affectation ajouterAffectation(Long enseignantId, Long matiereId, Long classeId){
+    public Affectation ajouterAffectation(Long enseignantId,
+                                      List<Long> matiereIds,
+                                      Long classeId) {
 
-        Enseignant enseignant = enseignantRepository.findById(enseignantId)
-                .orElseThrow(() -> new RuntimeException("Enseignant introuvable"));
-        Matiere matiere = matiereRepository.findById(matiereId)
-                .orElseThrow(() -> new RuntimeException("Matière introuvable"));
-        Classe classe = classeRepository.findById(classeId)
-                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+    Enseignant enseignant = enseignantRepository.findById(enseignantId)
+            .orElseThrow(() -> new RuntimeException("Enseignant introuvable"));
 
-        Affectation affectation = new Affectation();
-        affectation.setEnseignant(enseignant);
-        affectation.setMatiere(matiere);
-        affectation.setClasse(classe);
+    List<Matiere> matieres = matiereRepository.findAllById(matiereIds);
 
-        return affectationRepository.save(affectation);
+    if (matieres.isEmpty()) {
+        throw new RuntimeException("Aucune matière trouvée");
     }
+
+    Classe classe = classeRepository.findById(classeId)
+            .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+
+    Affectation affectation = new Affectation();
+    affectation.setEnseignant(enseignant);
+    affectation.setMatieres(matieres); // ✅ IMPORTANT
+    affectation.setClasse(classe);
+    affectation.setDateCreation(LocalDate.now());
+
+    return affectationRepository.save(affectation);
+}
 
     // 2️⃣ Modifier une affectation
-    public Affectation modifierAffectation(Long affectationId,
-                                           Long enseignantId,
-                                           Long matiereId,
-                                           Long classeId){
+   public Affectation modifierAffectation(Long affectationId,
+                                       Long enseignantId,
+                                       List<Long> matiereIds,
+                                       Long classeId) {
 
-        Affectation affectation = affectationRepository.findById(affectationId)
-                .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
+    Affectation affectation = affectationRepository.findById(affectationId)
+            .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
 
-        if(enseignantId != null){
-            Enseignant enseignant = enseignantRepository.findById(enseignantId)
-                    .orElseThrow(() -> new RuntimeException("Enseignant introuvable"));
-            affectation.setEnseignant(enseignant);
-        }
-
-        if(matiereId != null){
-            Matiere matiere = matiereRepository.findById(matiereId)
-                    .orElseThrow(() -> new RuntimeException("Matière introuvable"));
-            affectation.setMatiere(matiere);
-        }
-
-        if(classeId != null){
-            Classe classe = classeRepository.findById(classeId)
-                    .orElseThrow(() -> new RuntimeException("Classe introuvable"));
-            affectation.setClasse(classe);
-        }
-
-        return affectationRepository.save(affectation);
+    if (enseignantId != null) {
+        Enseignant enseignant = enseignantRepository.findById(enseignantId)
+                .orElseThrow(() -> new RuntimeException("Enseignant introuvable"));
+        affectation.setEnseignant(enseignant);
     }
+
+    if (matiereIds != null && !matiereIds.isEmpty()) {
+        List<Matiere> matieres = matiereRepository.findAllById(matiereIds);
+
+        if (matieres.isEmpty()) {
+            throw new RuntimeException("Aucune matière trouvée");
+        }
+
+        affectation.setMatieres(matieres); // ✅ IMPORTANT
+    }
+
+    if (classeId != null) {
+        Classe classe = classeRepository.findById(classeId)
+                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+        affectation.setClasse(classe);
+    }
+
+    affectation.setDateModification(LocalDate.now());
+
+    return affectationRepository.save(affectation);
+}
+
+    // public AffectationDTO getAffectationDetailById(Long id) {
+    //     return affectationRepository.findFullById(id)
+    //             .orElseThrow(() -> new RuntimeException("Affectation non trouvée avec id : " + id));
+    // }
+
 
     // 3️⃣ Supprimer une affectation
     public void supprimerAffectation(Long affectationId){
@@ -96,12 +118,17 @@ public class AffectationService {
         return affectationRepository.findByClasse(classe);
     }
 
-    // 6️⃣ Récupérer par matière
-    public List<Affectation> getAffectationsParMatiere(Long matiereId){
-        Matiere matiere = matiereRepository.findById(matiereId)
-                .orElseThrow(() -> new RuntimeException("Matière introuvable"));
-        return affectationRepository.findByMatiere(matiere);
+    public List<Affectation> getAll(){
+        List<Affectation> affectations = affectationRepository.findAll();
+
+        return affectations;
     }
+    // 6️⃣ Récupérer par matière
+    // public List<Affectation> getAffectationsParMatiere(Long matiereId){
+    //     Matiere matiere = matiereRepository.findById(matiereId)
+    //             .orElseThrow(() -> new RuntimeException("Matière introuvable"));
+    //     return affectationRepository.findByMatiere(matiere);
+    // }
 
     // 7️⃣ Récupérer par classe et année scolaire
     // public List<Affectation> getAffectationsParClasseEtAnnee(Long classeId, Long anneeId){

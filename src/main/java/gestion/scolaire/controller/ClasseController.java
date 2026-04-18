@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import gestion.scolaire.dto.AjoutMatieresDTO;
 import gestion.scolaire.model.Classe;
 import gestion.scolaire.model.Etudiant;
+import gestion.scolaire.model.Filiere;
 import gestion.scolaire.service.ClasseService;
 
 @RestController
@@ -17,31 +19,26 @@ public class ClasseController {
     @Autowired
     private ClasseService classeService;
 
-
     // 1️⃣ Créer une classe
     @PostMapping
     public ResponseEntity<Classe> creerClasse(
             @RequestParam String nom,
-            @RequestParam Long niveauId,
             @RequestParam Long filiereId) {
 
-        Classe classe = classeService.creerClasse(nom, niveauId, filiereId);
+        Classe classe = classeService.creerClasse(nom, filiereId);
         return ResponseEntity.ok(classe);
     }
-
 
     // 2️⃣ Modifier une classe
     @PutMapping("/{id}")
     public ResponseEntity<Classe> modifierClasse(
             @PathVariable Long id,
             @RequestParam(required = false) String nom,
-            @RequestParam(required = false) Long niveauId,
             @RequestParam(required = false) Long filiereId) {
 
-        Classe classe = classeService.modifierClasse(id, nom, niveauId, filiereId);
+        Classe classe = classeService.modifierClasse(id, nom, filiereId);
         return ResponseEntity.ok(classe);
     }
-
 
     // 3️⃣ Supprimer une classe
     @DeleteMapping("/{id}")
@@ -51,7 +48,6 @@ public class ClasseController {
         return ResponseEntity.ok("Classe supprimée avec succès");
     }
 
-
     // 4️⃣ Récupérer une classe par ID
     @GetMapping("/{id}")
     public ResponseEntity<Classe> getClasseById(@PathVariable Long id) {
@@ -60,14 +56,12 @@ public class ClasseController {
         return ResponseEntity.ok(classe);
     }
 
-
     // 5️⃣ Lister toutes les classes
     @GetMapping
     public ResponseEntity<List<Classe>> getAllClasses() {
 
         return ResponseEntity.ok(classeService.getAllClasses());
     }
-
 
     // 6️⃣ Classes par filière
     @GetMapping("/filiere/{filiereId}")
@@ -76,7 +70,6 @@ public class ClasseController {
         return ResponseEntity.ok(classeService.getClassesParFiliere(filiereId));
     }
 
-
     // 7️⃣ Étudiants d'une classe pour une année scolaire
     @GetMapping("/{classeId}/annee/{anneeId}/etudiants")
     public ResponseEntity<List<Etudiant>> getEtudiantsParClasseEtAnnee(
@@ -84,8 +77,7 @@ public class ClasseController {
             @PathVariable Long anneeId) {
 
         return ResponseEntity.ok(
-                classeService.getEtudiantsParClasseEtAnnee(classeId, anneeId)
-        );
+                classeService.getEtudiantsParClasseEtAnnee(classeId, anneeId));
     }
 
 }

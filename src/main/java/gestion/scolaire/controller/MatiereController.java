@@ -21,23 +21,20 @@ public class MatiereController {
     // 1️⃣ Ajouter une matière
     @PostMapping
     public ResponseEntity<Matiere> ajouterMatiere(
-            @RequestParam String nom,
-            @RequestParam double coefficient){
+           @RequestBody Matiere matiere){
 
         return ResponseEntity.ok(
-                matiereService.ajouterMatiere(nom, coefficient)
+                matiereService.ajouterMatiere(matiere)
         );
     }
 
     // 2️⃣ Modifier une matière
     @PutMapping("/{id}")
     public ResponseEntity<Matiere> modifierMatiere(
-            @PathVariable Long id,
-            @RequestParam(required = false) String nom,
-            @RequestParam(required = false) Double coefficient){
+            @PathVariable Long id, @RequestBody Matiere matiere){
 
         return ResponseEntity.ok(
-                matiereService.modifierMatiere(id, nom, coefficient)
+                matiereService.modifierMatiere(id, matiere)
         );
     }
 

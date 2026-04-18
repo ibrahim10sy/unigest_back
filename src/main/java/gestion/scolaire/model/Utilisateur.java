@@ -1,5 +1,8 @@
 package gestion.scolaire.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -28,4 +31,8 @@ public abstract class Utilisateur {
     private Role role;
 
     private boolean actif = true;
+
+    @OneToMany(mappedBy = "utilisateur")
+    @JsonIgnore
+    private List<Depense> depenses;
 }

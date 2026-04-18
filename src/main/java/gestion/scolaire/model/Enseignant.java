@@ -14,6 +14,7 @@ import lombok.Data;
 public class Enseignant extends Utilisateur {
 
     private String specialite;
+    private String adresse;
 
     @OneToMany(mappedBy = "enseignant")
     @JsonIgnore

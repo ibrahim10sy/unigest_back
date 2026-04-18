@@ -24,34 +24,52 @@ public class PaiementService {
     // 1️⃣ Ajouter un paiement
     public Paiement effectuerPaiement(Long inscriptionId,
                                       double montant,
-                                      ModePaiement mode,
-                                      String reference){
+                                      ModePaiement mode
+                                      ){
 
         Inscription inscription = inscriptionRepository.findById(inscriptionId)
                 .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
 
         Paiement paiement = new Paiement();
+         String matricule = genererRef();
         paiement.setInscription(inscription);
         paiement.setMontant(montant);
         paiement.setDatePaiement(LocalDate.now());
         paiement.setModePaiement(mode);
-        paiement.setReference(reference);
+        paiement.setReference(matricule);
 
         return paiementRepository.save(paiement);
     }
+    public String genererRef() {
+    int annee = LocalDate.now().getYear();
+
+    // Compter le nombre d'étudiants déjà existants
+    long count = paiementRepository.count();
+
+    // Incrément
+    long numero = count + 1;
+
+    // Formatage avec 4 chiffres
+    return "PAI-" + annee + "-" + String.format("%04d", numero);
+}
 
     // 2️⃣ Modifier un paiement
     public Paiement modifierPaiement(Long paiementId,
+                                        Long inscriptionId,
                                      double montant,
-                                     ModePaiement mode,
-                                     String reference){
+                                     ModePaiement mode
+                                     ){
 
         Paiement paiement = paiementRepository.findById(paiementId)
                 .orElseThrow(() -> new RuntimeException("Paiement introuvable"));
 
         paiement.setMontant(montant);
         paiement.setModePaiement(mode);
-        paiement.setReference(reference);
+        if (inscriptionId != null) {
+            Inscription inscription = inscriptionRepository.findById(inscriptionId)
+                    .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+            paiement.setInscription(inscription);
+        }
 
         return paiementRepository.save(paiement);
     }
