@@ -37,6 +37,33 @@ public class DepenseService {
         return depenseRepository.save(depense);
     }
 
+
+     // =========================
+// UPDATE
+// =========================
+    public Depense updateDepense(Long id, Depense depenseDetails) {
+    // 1. Trouver la dépense existante
+    Depense depense = depenseRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Dépense non trouvée avec l'id : " + id));
+
+    // 2. Mettre à jour les champs simples
+    depense.setLibelle(depenseDetails.getLibelle());
+    depense.setMontant(depenseDetails.getMontant());
+    depense.setDateDepense(depenseDetails.getDateDepense());
+    depense.setDescription(depenseDetails.getDescription());
+    depense.setModePaiement(depenseDetails.getModePaiement());
+
+    // 3. Gérer la mise à jour de la catégorie (si fournie)
+    if (depenseDetails.getCategorieDepense() != null && depenseDetails.getCategorieDepense().getId() != null) {
+        CategorieDepense categorie = categorieRepository.findById(depenseDetails.getCategorieDepense().getId())
+                .orElseThrow(() -> new RuntimeException("Catégorie introuvable"));
+        depense.setCategorieDepense(categorie);
+    }
+
+    // 4. Sauvegarder
+    return depenseRepository.save(depense);
+}
+
     // =========================
     // GET ALL
     // =========================
