@@ -24,6 +24,7 @@ public class Matiere {
     @JsonIgnore
     private List<Affectation> affectations;
 
-    @OneToMany(mappedBy = "matiere")
+   @OneToMany(mappedBy = "matiere")
+@JsonIgnore   // 🔥 AJOUTE ÇA
 private List<ClasseMatiere> classeMatieres;
 }
