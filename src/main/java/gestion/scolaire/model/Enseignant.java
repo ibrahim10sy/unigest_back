@@ -19,4 +19,5 @@ public class Enseignant extends Utilisateur {
     @OneToMany(mappedBy = "enseignant")
     @JsonIgnore
     private List<Affectation> affectations;
+
 }

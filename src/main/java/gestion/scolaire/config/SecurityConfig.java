@@ -60,7 +60,7 @@ public class SecurityConfig {
                                                                 "/api/auth/login",
                                                                 "/api/admins/**",
                                                                 "/api/v3/api-docs/**", // Correspond à
-                                                                                       // springdoc.api-docs.path
+                                                               "/api/medias/*/fichier",                     // springdoc.api-docs.path
                                                                 "/api/swagger-ui/**", // Correspond au dossier des
                                                                                       // ressources UI
                                                                 "/api/swagger-ui.html", // Correspond à

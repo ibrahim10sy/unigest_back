@@ -1,0 +1,118 @@
+package gestion.scolaire.service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.stereotype.Service;
+
+@Service
+public class FileUpload {
+    
+    private static final String FTP_SERVER = "31.207.38.123";
+    private static final int FTP_PORT = 21;
+    private static final String FTP_USER = "ftpunigest";
+    private static final String FTP_PASSWORD = "unigest";
+    int retryCount = 3;
+
+    // @Async
+    public String uploadFile(Path imagePath, String imageName) throws Exception {
+        FTPClient ftpClient = new FTPClient();
+        while (retryCount > 0) {
+            try {
+                ftpClient.connect(FTP_SERVER, FTP_PORT);
+                ftpClient.setConnectTimeout(10000); // 10 secondes
+                ftpClient.setDataTimeout(10000);
+                System.out.println("Connecté : " + ftpClient.isConnected());
+                int replyCode = ftpClient.getReplyCode();
+                System.out.println("Code de réponse : " + replyCode);
+                System.out.println("Message de réponse : " + ftpClient.getReplyString());
+                boolean loginResult = ftpClient.login(FTP_USER, FTP_PASSWORD);
+                System.out.println("Connexion réussie : " + loginResult);
+
+                if (!loginResult) {
+                    System.out.println("Erreur d'authentification. Vérifie le mot de passe ou l'utilisateur.");
+                }
+                // ftpClient.enterLocalPassiveMode();
+                ftpClient.enterLocalActiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+                try (InputStream inputStream = Files.newInputStream(imagePath)) {
+                    // String remoteFilePath = "/web/sim-images/" + imageName;
+                    String remoteFilePath = "/files/" + imageName;
+                    System.out.println("Chemin distant : " + remoteFilePath);
+
+                    int replyCodeBefore = ftpClient.getReplyCode();
+                    String replyMessageBefore = ftpClient.getReplyString();
+                    System.out.println("Avant storeFile() - Code de réponse : " + replyCodeBefore + " - " + replyMessageBefore);
+
+                    boolean uploadResult = ftpClient.storeFile(remoteFilePath, inputStream);
+
+                    int replyCodeAfter = ftpClient.getReplyCode();
+                    String replyMessageAfter = ftpClient.getReplyString();
+                    System.out.println("Après storeFile() - Code de réponse : " + replyCodeAfter + " - " + replyMessageAfter);
+
+                    if (uploadResult) {
+                        System.out.println("Transfert réussi !");
+                        return "ftp://" + FTP_USER + "@" + FTP_SERVER + remoteFilePath;
+                    } else {
+                        System.err.println("Le transfert du fichier a échoué.");
+                        throw new Exception("Erreur lors du chargement de l'image sur le serveur FTP.");
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new Exception("Erreur lors de la connexion au serveur FTP : " + e.getMessage());
+            } finally {
+                try {
+                    if (ftpClient.isConnected()) {
+                        ftpClient.logout();
+                        ftpClient.disconnect();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        throw new Exception("Échec du téléchargement du fichier après plusieurs tentatives.");
+    }
+
+    public byte[] getFileByName(String fileName) throws IOException {
+        FTPClient ftpClient = new FTPClient();
+        byte[] fileBytes = null;
+
+        try {
+            ftpClient.connect(FTP_SERVER, FTP_PORT);
+            ftpClient.login(FTP_USER, FTP_PASSWORD);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            String remoteFilePath = "/files/" + fileName;
+
+            try (InputStream inputStream = ftpClient.retrieveFileStream(remoteFilePath)) {
+                if (inputStream != null) {
+                    fileBytes = inputStream.readAllBytes();
+                    ftpClient.completePendingCommand();
+                }
+            }
+
+        } catch (IOException e) {
+            throw new IOException("Erreur lors de la récupération du fichier : " + e.getMessage());
+        } finally {
+            try {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return fileBytes;
+    }
+}
+
