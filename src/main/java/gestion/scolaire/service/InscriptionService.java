@@ -18,105 +18,121 @@ import gestion.scolaire.repository.InscriptionRepository;
 @Service
 public class InscriptionService {
 
-    @Autowired
-    private InscriptionRepository inscriptionRepository;
+        @Autowired
+        private InscriptionRepository inscriptionRepository;
 
-    @Autowired
-    private EtudiantRepository etudiantRepository;
+        @Autowired
+        private EtudiantRepository etudiantRepository;
 
-    @Autowired
-    private ClasseRepository classeRepository;
+        @Autowired
+        private ClasseRepository classeRepository;
 
-    @Autowired
-    private AnneeScolaireRepository anneeRepository;
+        @Autowired
+        private AnneeScolaireRepository anneeRepository;
 
-    public Inscription inscrireEtudiant(Long etudiantId,
-            Long classeId,
-            Long anneeId,
-            double montant) {
+        public Inscription inscrireEtudiant(
+                        Long etudiantId,
+                        double montantReduction,
+                        String motifReduction,
+                        Long classeId,
+                        Long anneeId) {
 
-        Etudiant etudiant = etudiantRepository.findById(etudiantId).orElseThrow();
-        Classe classe = classeRepository.findById(classeId).orElseThrow();
-        AnneeScolaire annee = anneeRepository.findById(anneeId).orElseThrow();
+                Etudiant etudiant = etudiantRepository.findById(etudiantId).orElseThrow();
+                Classe classe = classeRepository.findById(classeId).orElseThrow();
+                AnneeScolaire annee = anneeRepository.findById(anneeId).orElseThrow();
 
-        Inscription inscription = new Inscription();
+                Inscription inscription = new Inscription();
 
-        inscription.setEtudiant(etudiant);
-        inscription.setClasse(classe);
-        inscription.setAnneeScolaire(annee);
-        inscription.setDateInscription(LocalDate.now());
-        inscription.setMontantTotal(montant);
-        inscription.setStatut("INSCRIT");
+                inscription.setEtudiant(etudiant);
+                inscription.setClasse(classe);
+                inscription.setAnneeScolaire(annee);
+                inscription.setMontantReduction(montantReduction);
+                inscription.setMotifReduction(motifReduction);
+                inscription.setDateInscription(LocalDate.now());
+                inscription.setStatut("INSCRIT");
 
-        return inscriptionRepository.save(inscription);
-    }
+                return inscriptionRepository.save(inscription);
+        }
 
-
-
-    public List<Etudiant> getEtudiantsParClasseEtAnnee(Long classeId, Long anneeId) {
-
-        Classe classe = classeRepository.findById(classeId)
-                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
-
-        AnneeScolaire annee = anneeRepository.findById(anneeId)
-                .orElseThrow(() -> new RuntimeException("Année introuvable"));
-
-        List<Inscription> inscriptions = inscriptionRepository.findByClasseAndAnneeScolaire(classe, annee);
-
-        return inscriptions.stream()
+         public List<Etudiant> getEtudiantsActifsParClasse(Long classeId) {
+        return inscriptionRepository
+                .findEtudiantsActifsByClasse(classeId)
+                .stream()
                 .map(Inscription::getEtudiant)
                 .toList();
     }
+    
+        public List<Etudiant> getEtudiantsParClasseEtAnnee(Long classeId, Long anneeId) {
 
-    public List<Inscription> getAll() {
+                Classe classe = classeRepository.findById(classeId)
+                                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
 
-        List<Inscription> inscriptions = inscriptionRepository.findAll();
+                AnneeScolaire annee = anneeRepository.findById(anneeId)
+                                .orElseThrow(() -> new RuntimeException("Année introuvable"));
 
-        return inscriptions;
-    }
+                List<Inscription> inscriptions = inscriptionRepository.findByClasseAndAnneeScolaire(classe, annee);
 
-    public List<Etudiant> getEtudiantsParClasse(Long classeId) {
+                return inscriptions.stream()
+                                .map(Inscription::getEtudiant)
+                                .toList();
+        }
 
-        List<Inscription> inscriptions = inscriptionRepository.findByClasseId(classeId);
+        public List<Inscription> getAll() {
 
-        return inscriptions.stream()
-                .map(Inscription::getEtudiant)
-                .toList();
-    }
+                List<Inscription> inscriptions = inscriptionRepository.findAll();
 
-    public Inscription getInscription(Long id) {
+                return inscriptions;
+        }
 
-        return inscriptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
-    }
+        public List<Inscription> getAllEtudiant(Long id) {
 
-    public Inscription modifierInscription(Long id,
-            Long classeId,
-            Long anneeId,
-            double montant
-        ) {
+                List<Inscription> inscriptions = inscriptionRepository.findByEtudiantId(id);
 
-        Inscription inscription = inscriptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+                return inscriptions;
+        }
 
-        Classe classe = classeRepository.findById(classeId)
-                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+        public List<Etudiant> getEtudiantsParClasse(Long classeId) {
 
-        AnneeScolaire annee = anneeRepository.findById(anneeId)
-                .orElseThrow(() -> new RuntimeException("Année introuvable"));
+                List<Inscription> inscriptions = inscriptionRepository.findByClasseId(classeId);
 
-        inscription.setClasse(classe);
-        inscription.setAnneeScolaire(annee);
-        inscription.setMontantTotal(montant);
+                return inscriptions.stream()
+                                .map(Inscription::getEtudiant)
+                                .toList();
+        }
 
-        return inscriptionRepository.save(inscription);
-    }
+        public Inscription getInscription(Long id) {
 
-    public void supprimerInscription(Long id){
+                return inscriptionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+        }
 
-    Inscription inscription = inscriptionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+        public Inscription modifierInscription(Long id,
+                        Long classeId,
+                        Long anneeId,
+                        String motifReduction,
+                        double montantReduction) {
 
-    inscriptionRepository.delete(inscription);
-}
+                Inscription inscription = inscriptionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+
+                Classe classe = classeRepository.findById(classeId)
+                                .orElseThrow(() -> new RuntimeException("Classe introuvable"));
+
+                AnneeScolaire annee = anneeRepository.findById(anneeId)
+                                .orElseThrow(() -> new RuntimeException("Année introuvable"));
+
+                inscription.setClasse(classe);
+                inscription.setAnneeScolaire(annee);
+                inscription.setMontantReduction(montantReduction);
+                inscription.setMotifReduction(motifReduction);
+                return inscriptionRepository.save(inscription);
+        }
+
+        public void supprimerInscription(Long id) {
+
+                Inscription inscription = inscriptionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+
+                inscriptionRepository.delete(inscription);
+        }
 }

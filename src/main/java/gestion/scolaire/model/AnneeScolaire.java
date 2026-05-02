@@ -33,4 +33,8 @@ public class AnneeScolaire {
     @OneToMany(mappedBy = "anneeScolaire")
     @JsonIgnore
     private List<Depense> depenses;
+
+    @OneToMany(mappedBy = "anneeScolaire")
+    @JsonIgnore
+    private List<Seance> seance;
 }

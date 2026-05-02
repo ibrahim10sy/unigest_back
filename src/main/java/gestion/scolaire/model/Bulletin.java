@@ -22,9 +22,13 @@ public class Bulletin {
     @ManyToOne(optional = false)
     private Classe classe;
 
-    private String anneeScolaire;
+    @ManyToOne(optional = false)
+    private AnneeScolaire anneeScolaire;
 
-    private int semestre;
+    private Integer periode;
+
+    @Enumerated(EnumType.STRING)
+    private TypePeriode typePeriode;
 
     private double moyenneGenerale;
 
@@ -34,11 +38,8 @@ public class Bulletin {
 
     private String pdfUrl;
 
+    private LocalDate dateGeneration;
+
     @OneToMany(mappedBy = "bulletin", cascade = CascadeType.ALL)
     private List<LigneBulletin> lignes;
-
-    public void setDateGeneration(LocalDate now) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setDateGeneration'");
-    }
 }

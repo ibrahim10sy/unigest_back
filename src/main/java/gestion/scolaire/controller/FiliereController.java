@@ -25,8 +25,8 @@ public class FiliereController {
 
     // 1️⃣ Ajouter une filière
     @PostMapping
-    public ResponseEntity<Filiere> ajouterFiliere(@RequestParam String nom,@RequestParam Long niveauId){
-        return ResponseEntity.ok(filiereService.ajouterFiliere(nom,niveauId));
+    public ResponseEntity<Filiere> ajouterFiliere(@RequestParam String nom,@RequestParam Long niveauId, @RequestParam double fraisInscription, @RequestParam double fraisScolarite){
+        return ResponseEntity.ok(filiereService.ajouterFiliere(nom,niveauId,fraisInscription,fraisScolarite));
     }
 
     // 2️⃣ Modifier une filière
@@ -34,12 +34,13 @@ public class FiliereController {
     public ResponseEntity<Filiere> modifierFiliere(@PathVariable Long id,
                                                    @RequestParam(required = false) String nom,
                                                    @RequestParam(required = false) Boolean actif,
-                                                 @RequestParam Long niveauId
+                                                   @RequestParam Long niveauId,
+                                                   @RequestParam(required = false) double fraisInscription,
+                                                   @RequestParam(required = false) double fraisScolarite
                                                 ){
-        return ResponseEntity.ok(filiereService.modifierFiliere(id, nom, actif,niveauId));
+        return ResponseEntity.ok(filiereService.modifierFiliere(id, nom, actif,niveauId,fraisInscription,fraisScolarite));
     }
     
- 
 
     // 3️⃣ Supprimer une filière
     @DeleteMapping("/{id}")

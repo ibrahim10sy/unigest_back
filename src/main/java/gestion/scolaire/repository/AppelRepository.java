@@ -23,4 +23,14 @@ public interface AppelRepository extends JpaRepository<Appel, Long> {
     void deleteBySeanceIdAndEtudiantId(Long seanceId, Long etudiantId);
 
     void deleteBySeanceId(Long seanceId);
+
+    List<Appel> findBySeanceAnneeScolaireId(Long anneeId);
+
+     List<Appel> findByEtudiantIdAndSeanceAnneeScolaireIdAndStatut(
+            Long etudiantId,
+            Long anneeId,
+            StatutPresence statut
+    );
+
+    
 }

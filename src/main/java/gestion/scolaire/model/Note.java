@@ -21,12 +21,18 @@ public class Note {
     @ManyToOne(optional = false)
     private Affectation affectation;
 
+    @ManyToOne(optional = false)
+    private AnneeScolaire anneeScolaire;
+
     private double valeur;
 
     @Enumerated(EnumType.STRING)
     private TypeNote type;
 
-    private int semestre;
+    private Integer periode; // semestre ou trimestre
+
+    @Enumerated(EnumType.STRING)
+    private TypePeriode typePeriode; // SEMESTRE, TRIMESTRE
 
     private LocalDate dateEvaluation;
 }

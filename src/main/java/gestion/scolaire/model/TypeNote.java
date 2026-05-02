@@ -3,5 +3,7 @@ package gestion.scolaire.model;
 public enum TypeNote {
     DEVOIR,
     COMPOSITION,
-    INTERROGATION
+    INTERROGATION,
+    TP,
+    PARTICIPATION
 }

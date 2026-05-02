@@ -37,6 +37,9 @@ public class Seance {
     @ManyToOne
     private Affectation affectation;
 
+    @ManyToOne
+    private AnneeScolaire anneeScolaire;
+
     @OneToMany(mappedBy = "seance")
     @JsonIgnore
     private List<Appel> appels; 

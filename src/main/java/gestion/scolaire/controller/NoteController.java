@@ -11,24 +11,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gestion.scolaire.model.Note;
 import gestion.scolaire.model.TypeNote;
+import gestion.scolaire.model.TypePeriode;
 import gestion.scolaire.service.NoteService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/notes")
+@RequiredArgsConstructor
 public class NoteController {
 
-    @Autowired
-    private NoteService noteService;
+    private final NoteService noteService;
 
-
-    // 1️⃣ Ajouter une note
+    /**
+     * Ajouter une note
+     */
     @PostMapping
     public ResponseEntity<Note> ajouterNote(
             @RequestParam Long etudiantId,
             @RequestParam Long affectationId,
             @RequestParam double valeur,
             @RequestParam TypeNote type,
-            @RequestParam int semestre){
+            @RequestParam Integer periode,
+            @RequestParam TypePeriode typePeriode) {
 
         return ResponseEntity.ok(
                 noteService.ajouterNote(
@@ -36,86 +40,107 @@ public class NoteController {
                         affectationId,
                         valeur,
                         type,
-                        semestre
+                        periode,
+                        typePeriode
                 )
         );
     }
 
-
-    // 2️⃣ Modifier une note
+    /**
+     * Modifier une note
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Note> modifierNote(
             @PathVariable Long id,
             @RequestParam double valeur,
-            @RequestParam TypeNote type){
+            @RequestParam TypeNote type) {
 
         return ResponseEntity.ok(
                 noteService.modifierNote(id, valeur, type)
         );
     }
 
-
-    // 3️⃣ Supprimer une note
+    /**
+     * Supprimer une note
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerNote(@PathVariable Long id){
+    public ResponseEntity<String> supprimerNote(
+            @PathVariable Long id) {
 
         noteService.supprimerNote(id);
 
         return ResponseEntity.ok("Note supprimée");
     }
 
-
-    // 4️⃣ Récupérer une note
+    /**
+     * Récupérer une note
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNote(@PathVariable Long id){
+    public ResponseEntity<Note> getNote(
+            @PathVariable Long id) {
 
         return ResponseEntity.ok(
                 noteService.getNoteById(id)
         );
     }
 
-
-    // 5️⃣ Notes d'un étudiant
+    /**
+     * Notes d’un étudiant (année active)
+     */
     @GetMapping("/etudiant/{etudiantId}")
-    public ResponseEntity<List<Note>> getNotesEtudiant(@PathVariable Long etudiantId){
+    public ResponseEntity<List<Note>> getNotesEtudiant(
+            @PathVariable Long etudiantId) {
 
         return ResponseEntity.ok(
                 noteService.getNotesEtudiant(etudiantId)
         );
     }
 
-
-    // 6️⃣ Notes d'une affectation
+    /**
+     * Notes d’une affectation
+     */
     @GetMapping("/affectation/{affectationId}")
-    public ResponseEntity<List<Note>> getNotesParAffectation(@PathVariable Long affectationId){
+    public ResponseEntity<List<Note>> getNotesParAffectation(
+            @PathVariable Long affectationId) {
 
         return ResponseEntity.ok(
                 noteService.getNotesParAffectation(affectationId)
         );
     }
 
-
-    // 7️⃣ Notes étudiant par semestre
-    @GetMapping("/etudiant/{etudiantId}/semestre/{semestre}")
-    public ResponseEntity<List<Note>> getNotesEtudiantSemestre(
+    /**
+     * Notes d’un étudiant par période
+     */
+    @GetMapping("/etudiant/{etudiantId}/periode")
+    public ResponseEntity<List<Note>> getNotesEtudiantPeriode(
             @PathVariable Long etudiantId,
-            @PathVariable int semestre){
+            @RequestParam Integer periode,
+            @RequestParam TypePeriode typePeriode) {
 
         return ResponseEntity.ok(
-                noteService.getNotesEtudiantSemestre(etudiantId, semestre)
+                noteService.getNotesEtudiantPeriode(
+                        etudiantId,
+                        periode,
+                        typePeriode
+                )
         );
     }
 
-
-    // 8️⃣ Moyenne étudiant
-    @GetMapping("/etudiant/{etudiantId}/moyenne/{semestre}")
+    /**
+     * Moyenne d’un étudiant par période
+     */
+    @GetMapping("/etudiant/{etudiantId}/moyenne")
     public ResponseEntity<Double> calculerMoyenne(
             @PathVariable Long etudiantId,
-            @PathVariable int semestre){
+            @RequestParam Integer periode,
+            @RequestParam TypePeriode typePeriode) {
 
         return ResponseEntity.ok(
-                noteService.calculerMoyenneEtudiant(etudiantId, semestre)
+                noteService.calculerMoyenneEtudiant(
+                        etudiantId,
+                        periode,
+                        typePeriode
+                )
         );
     }
-
 }

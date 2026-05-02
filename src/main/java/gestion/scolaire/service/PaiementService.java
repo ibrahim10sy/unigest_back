@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gestion.scolaire.dto.PaiementResumeDTO;
+import gestion.scolaire.model.Filiere;
 import gestion.scolaire.model.Inscription;
 import gestion.scolaire.model.ModePaiement;
 import gestion.scolaire.model.Paiement;
@@ -89,6 +91,44 @@ public class PaiementService {
         return total == null ? 0 : total;
     }
 
+    public PaiementResumeDTO calculerResume(Inscription inscription) {
+
+        Filiere filiere = inscription.getClasse().getFiliere();
+
+        double fraisInscription = filiere.getFraisInscription();
+        double fraisScolarite = filiere.getFraisScolarite();
+
+        double totalBrut = fraisInscription + fraisScolarite;
+
+        double reduction = inscription.getMontantReduction();
+
+        double totalNet = totalBrut - reduction;
+
+        double totalPaye = inscription.getPaiements()
+                .stream()
+                .mapToDouble(Paiement::getMontant)
+                .sum();
+
+        double reste = totalNet - totalPaye;
+
+        PaiementResumeDTO dto = new PaiementResumeDTO();
+        dto.setTotalBrut(totalBrut);
+        dto.setReduction(reduction);
+        dto.setTotalNet(totalNet);
+        dto.setTotalPaye(totalPaye);
+        dto.setResteAPayer(reste);
+
+        if (reste <= 0) {
+            dto.setStatutPaiement("COMPLET");
+        } else if (totalPaye > 0) {
+            dto.setStatutPaiement("PARTIEL");
+        } else {
+            dto.setStatutPaiement("IMPAYE");
+        }
+
+        return dto;
+    }
+    
     // 5️⃣ Récupérer les paiements d'un étudiant
     public List<Paiement> getPaiementsParEtudiant(Long etudiantId){
         return paiementRepository.findByEtudiantId(etudiantId);

@@ -29,7 +29,9 @@ public class Inscription {
 
     private LocalDate dateInscription;
 
-    private double montantTotal;
+    private double montantReduction;
+
+    private String motifReduction;
 
     private String statut; // INSCRIT, ABANDONNE, TERMINE
 

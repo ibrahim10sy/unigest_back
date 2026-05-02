@@ -14,94 +14,101 @@ import gestion.scolaire.service.InscriptionService;
 @RequestMapping("/api/inscriptions")
 public class InscriptionController {
 
-    @Autowired
-    private InscriptionService inscriptionService;
+        @Autowired
+        private InscriptionService inscriptionService;
 
+        // 1️⃣ Inscrire un étudiant
+        @PostMapping
+        public ResponseEntity<Inscription> inscrireEtudiant(
+                        @RequestParam Long etudiantId,
+                        @RequestParam Long classeId,
+                        @RequestParam Long anneeId,
+                        @RequestParam double montantReduction,
+                        @RequestParam String motifReduction) {
 
-    // 1️⃣ Inscrire un étudiant
-    @PostMapping
-    public ResponseEntity<Inscription> inscrireEtudiant(
-            @RequestParam Long etudiantId,
-            @RequestParam Long classeId,
-            @RequestParam Long anneeId,
-            @RequestParam double montant){
+                return ResponseEntity.ok(
+                                inscriptionService.inscrireEtudiant(
+                                                etudiantId,
+                                                montantReduction,
+                                                motifReduction,
+                                                classeId,
+                                                anneeId));
+        }
 
-        return ResponseEntity.ok(
-                inscriptionService.inscrireEtudiant(
-                        etudiantId,
-                        classeId,
-                        anneeId,
-                        montant
-                )
-        );
-    }
+        // 2️⃣ Récupérer les inscriptions d'un étudiant
+        @GetMapping("/etudiant/{id}")
+        public ResponseEntity<List<Inscription>> getInscriptionsParEtudiant(@PathVariable Long id) {
 
+                return ResponseEntity.ok(inscriptionService.getAllEtudiant(id));
+        }
 
-    // 2️⃣ Récupérer une inscription
-    @GetMapping("/{id}")
-    public ResponseEntity<Inscription> getInscription(@PathVariable Long id){
+        @GetMapping("/{classeId}/etudiants")
+        public ResponseEntity<List<Etudiant>> getEtudiantsActifsParClasse(
+                        @PathVariable Long classeId) {
 
-        return ResponseEntity.ok(inscriptionService.getInscription(id));
-    }
+                return ResponseEntity.ok(
+                                inscriptionService.getEtudiantsActifsParClasse(classeId));
+        }
 
-    @GetMapping
-    public ResponseEntity<List<Inscription>> getAllInscription(){
-        return ResponseEntity.ok(inscriptionService.getAll());
-    }
+        // 2️⃣ Récupérer une inscription
+        @GetMapping("/{id}")
+        public ResponseEntity<Inscription> getInscription(@PathVariable Long id) {
 
+                return ResponseEntity.ok(inscriptionService.getInscription(id));
+        }
 
-    // 3️⃣ Modifier une inscription
-    @PutMapping("/{id}")
-    public ResponseEntity<Inscription> modifierInscription(
-            @PathVariable Long id,
-            @RequestParam Long classeId,
-            @RequestParam Long anneeId,
-            @RequestParam double montant
-        ){
+        @GetMapping
+        public ResponseEntity<List<Inscription>> getAllInscription() {
+                return ResponseEntity.ok(inscriptionService.getAll());
+        }
 
-        return ResponseEntity.ok(
-                inscriptionService.modifierInscription(
-                        id,
-                        classeId,
-                        anneeId, montant
-                )
-        );
-    }
+        // 3️⃣ Modifier une inscription
+        @PutMapping("/{id}")
+        public ResponseEntity<Inscription> modifierInscription(
+                        @PathVariable Long id,
+                        @RequestParam Long classeId,
+                        @RequestParam Long anneeId,
+                        @RequestParam String motifReduction,
+                        @RequestParam double montantReduction) {
 
+                return ResponseEntity.ok(
+                                inscriptionService.modifierInscription(
 
-    // 4️⃣ Supprimer une inscription
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerInscription(@PathVariable Long id){
+                                                id,
+                                                classeId,
+                                                anneeId,
+                                                motifReduction,
+                                                montantReduction));
+        }
 
-        inscriptionService.supprimerInscription(id);
+        // 4️⃣ Supprimer une inscription
+        @DeleteMapping("/{id}")
+        public ResponseEntity<String> supprimerInscription(@PathVariable Long id) {
 
-        return ResponseEntity.ok("Inscription supprimée");
-    }
+                inscriptionService.supprimerInscription(id);
 
+                return ResponseEntity.ok("Inscription supprimée");
+        }
 
-    // 5️⃣ Étudiants d'une classe
-    @GetMapping("/classe/{classeId}")
-    public ResponseEntity<List<Etudiant>> getEtudiantsParClasse(
-            @PathVariable Long classeId){
+        // 5️⃣ Étudiants d'une classe
+        @GetMapping("/classe/{classeId}")
+        public ResponseEntity<List<Etudiant>> getEtudiantsParClasse(
+                        @PathVariable Long classeId) {
 
-        return ResponseEntity.ok(
-                inscriptionService.getEtudiantsParClasse(classeId)
-        );
-    }
+                return ResponseEntity.ok(
+                                inscriptionService.getEtudiantsParClasse(classeId));
+        }
 
+        // 6️⃣ Étudiants d'une classe pour une année
+        @GetMapping("/classe/{classeId}/annee/{anneeId}")
+        public ResponseEntity<List<Etudiant>> getEtudiantsParClasseEtAnnee(
+                        @PathVariable Long classeId,
+                        @PathVariable Long anneeId) {
 
-    // 6️⃣ Étudiants d'une classe pour une année
-    @GetMapping("/classe/{classeId}/annee/{anneeId}")
-    public ResponseEntity<List<Etudiant>> getEtudiantsParClasseEtAnnee(
-            @PathVariable Long classeId,
-            @PathVariable Long anneeId){
-
-        return ResponseEntity.ok(
-                inscriptionService.getEtudiantsParClasseEtAnnee(
-                        classeId,
-                        anneeId
-                )
-        );
-    }
+                return ResponseEntity.ok(
+                                inscriptionService.getEtudiantsParClasseEtAnnee(
+                                                classeId,
+                                                anneeId));
+        }
 
 }

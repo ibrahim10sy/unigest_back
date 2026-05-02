@@ -1,5 +1,6 @@
 package gestion.scolaire.controller;
 
+import gestion.scolaire.dto.SeanceDTO;
 import gestion.scolaire.model.Seance;
 import gestion.scolaire.service.SeanceService;
 
@@ -18,85 +19,75 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Séances", description = "Gestion des séances de cours")
 public class SeanceController {
 
-    @Autowired
-    private SeanceService seanceService;
+        @Autowired
+        private SeanceService seanceService;
 
+        @Operation(summary = "Démarrer une séance", description = "Crée une nouvelle séance pour une affectation")
+        @PostMapping("/demarrer")
+        public ResponseEntity<Seance> demarrerSeance(
+                        @Parameter(description = "ID de l'affectation") @RequestParam Long affectationId,
+                        @RequestParam String matiere) {
 
-    @Operation(summary = "Démarrer une séance",
-            description = "Crée une nouvelle séance pour une affectation")
-    @PostMapping("/demarrer")
-    public ResponseEntity<Seance> demarrerSeance(
-            @Parameter(description = "ID de l'affectation")
-            @RequestParam Long affectationId,
-            @RequestParam String matiere
-        ){
+                return ResponseEntity.ok(
+                                seanceService.demarrerSeance(affectationId, matiere));
+        }
 
-        return ResponseEntity.ok(
-                seanceService.demarrerSeance(affectationId, matiere)
-        );
-    }
+        @Operation(summary = "Terminer une séance")
+        @PutMapping("/{seanceId}/terminer")
+        public ResponseEntity<Seance> terminerSeance(
+                        @PathVariable Long seanceId) {
 
+                return ResponseEntity.ok(
+                                seanceService.terminerSeance(seanceId));
+        }
 
-    @Operation(summary = "Terminer une séance")
-    @PutMapping("/{seanceId}/terminer")
-    public ResponseEntity<Seance> terminerSeance(
-            @PathVariable Long seanceId){
+        @GetMapping("/jour")
+        public List<SeanceDTO> getSeancesDuJour() {
+                return seanceService.getSeancesDuJour();
+        } 
 
-        return ResponseEntity.ok(
-                seanceService.terminerSeance(seanceId)
-        );
-    }
+        @Operation(summary = "Récupérer les séances par date")
+        @GetMapping("/date")
+        public ResponseEntity<List<Seance>> getSeancesParDate(
+                        @RequestParam LocalDate date) {
 
+                return ResponseEntity.ok(
+                                seanceService.getSeancesParDate(date));
+        }
 
-    @Operation(summary = "Récupérer les séances par date")
-    @GetMapping("/date")
-    public ResponseEntity<List<Seance>> getSeancesParDate(
-            @RequestParam LocalDate date){
+        @Operation(summary = "Récupérer les séances par affectation")
+        @GetMapping("/affectation/{affectationId}")
+        public ResponseEntity<List<Seance>> getSeancesParAffectation(
+                        @PathVariable Long affectationId) {
 
-        return ResponseEntity.ok(
-                seanceService.getSeancesParDate(date)
-        );
-    }
+                return ResponseEntity.ok(
+                                seanceService.getSeancesParAffectation(affectationId));
+        }
 
-    @Operation(summary = "Récupérer les séances par affectation")
-    @GetMapping("/affectation/{affectationId}")
-    public ResponseEntity<List<Seance>> getSeancesParAffectation(
-            @PathVariable Long affectationId){
+        @Operation(summary = "Récupérer les séances par affectation et date")
+        @GetMapping("/affectation/{affectationId}/date")
+        public ResponseEntity<List<Seance>> getSeancesParAffectationEtDate(
+                        @PathVariable Long affectationId,
+                        @RequestParam LocalDate date) {
 
-        return ResponseEntity.ok(
-                seanceService.getSeancesParAffectation(affectationId)
-        );
-    }
+                return ResponseEntity.ok(
+                                seanceService.getSeancesParAffectationEtDate(affectationId, date));
+        }
 
+        @Operation(summary = "Récupérer toutes les séances en cours")
+        @GetMapping("/encours")
+        public ResponseEntity<List<Seance>> getSeancesEnCours() {
 
-    @Operation(summary = "Récupérer les séances par affectation et date")
-    @GetMapping("/affectation/{affectationId}/date")
-    public ResponseEntity<List<Seance>> getSeancesParAffectationEtDate(
-            @PathVariable Long affectationId,
-            @RequestParam LocalDate date){
+                return ResponseEntity.ok(
+                                seanceService.getSeancesEnCours());
+        }
 
-        return ResponseEntity.ok(
-                seanceService.getSeancesParAffectationEtDate(affectationId, date)
-        );
-    }
+        @Operation(summary = "Récupérer toutes les séances")
+        @GetMapping
+        public ResponseEntity<List<Seance>> getSeances() {
 
-
-    @Operation(summary = "Récupérer toutes les séances en cours")
-    @GetMapping("/encours")
-    public ResponseEntity<List<Seance>> getSeancesEnCours(){
-
-        return ResponseEntity.ok(
-                seanceService.getSeancesEnCours()
-        );
-    }
-   
-    @Operation(summary = "Récupérer toutes les séances")
-    @GetMapping
-    public ResponseEntity<List<Seance>> getSeances(){
-
-        return ResponseEntity.ok(
-                seanceService.getSeances()
-        );
-    }
+                return ResponseEntity.ok(
+                                seanceService.getSeances());
+        }
 
 }

@@ -5,57 +5,71 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gestion.scolaire.model.Affectation;
+import gestion.scolaire.model.AnneeScolaire;
 import gestion.scolaire.model.Etudiant;
 import gestion.scolaire.model.Note;
 import gestion.scolaire.model.TypeNote;
+import gestion.scolaire.model.TypePeriode;
 import gestion.scolaire.repository.AffectationRepository;
 import gestion.scolaire.repository.EtudiantRepository;
 import gestion.scolaire.repository.NoteRepository;
+import lombok.*;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class NoteService {
 
-    @Autowired
-    private NoteRepository noteRepository;
+    private final NoteRepository noteRepository;
+    private final EtudiantRepository etudiantRepository;
+    private final AffectationRepository affectationRepository;
+    private final AnneeScolaireService anneeScolaireService;
 
-    @Autowired
-    private EtudiantRepository etudiantRepository;
+    /**
+     * Ajouter une note
+     */
+    public Note ajouterNote(
+            Long etudiantId,
+            Long affectationId,
+            double valeur,
+            TypeNote type,
+            Integer periode,
+            TypePeriode typePeriode) {
 
-    @Autowired
-    private AffectationRepository affectationRepository;
+        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
 
+        Affectation affectation = affectationRepository.findById(affectationId)
+                .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
 
-    // AJOUTER NOTE
-    public Note ajouterNote(Long etudiantId,
-                            Long affectationId,
-                            double valeur,
-                            TypeNote type,
-                            int semestre){
-
-        Etudiant etudiant = etudiantRepository.findById(etudiantId).orElseThrow();
-        Affectation affectation = affectationRepository.findById(affectationId).orElseThrow();
+        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
 
         Note note = new Note();
-
         note.setEtudiant(etudiant);
         note.setAffectation(affectation);
+        note.setAnneeScolaire(anneeActive);
         note.setValeur(valeur);
         note.setType(type);
-        note.setSemestre(semestre);
+        note.setPeriode(periode);
+        note.setTypePeriode(typePeriode);
         note.setDateEvaluation(LocalDate.now());
 
         return noteRepository.save(note);
     }
 
+    /**
+     * Modifier une note
+     */
+    public Note modifierNote(
+            Long noteId,
+            double valeur,
+            TypeNote type) {
 
-    // MODIFIER NOTE
-    public Note modifierNote(Long noteId,
-                             double valeur,
-                             TypeNote type){
-
-        Note note = noteRepository.findById(noteId).orElseThrow();
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new RuntimeException("Note introuvable"));
 
         note.setValeur(valeur);
         note.setType(type);
@@ -63,55 +77,84 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
-
-    // SUPPRIMER NOTE
-    public void supprimerNote(Long noteId){
+    /**
+     * Supprimer une note
+     */
+    public void supprimerNote(Long noteId) {
         noteRepository.deleteById(noteId);
     }
 
+    /**
+     * Récupérer une note
+     */
+    public Note getNoteById(Long noteId) {
+        return noteRepository.findById(noteId)
+                .orElseThrow(() -> new RuntimeException("Note introuvable"));
+    }
 
-    // RECUPERER PAR ID
-    public Note getNoteById(Long noteId){
-        return noteRepository.findById(noteId).orElseThrow();
+    /**
+     * Notes d’un étudiant (année active)
+     */
+    public List<Note> getNotesEtudiant(Long etudiantId) {
+        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+        return noteRepository.findByEtudiantIdAndAnneeScolaireId(
+                etudiantId,
+                anneeActive.getId()
+        );
+    }
+
+    /**
+     * Notes d’un étudiant par période
+     */
+    public List<Note> getNotesEtudiantPeriode(
+            Long etudiantId,
+            Integer periode,
+            TypePeriode typePeriode) {
+
+        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+        return noteRepository
+                .findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+                        etudiantId,
+                        anneeActive.getId(),
+                        periode,
+                        typePeriode
+                );
     }
 
 
-    // NOTES PAR ETUDIANT
-    public List<Note> getNotesEtudiant(Long etudiantId){
-        return noteRepository.findByEtudiantId(etudiantId);
-    }
+    public List<Note> getNotesParAffectation(Long affectationId) {
 
+    AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
 
-    // NOTES PAR AFFECTATION
-    public List<Note> getNotesParAffectation(Long affectationId){
-        return noteRepository.findByAffectationId(affectationId);
-    }
+    return noteRepository.findByAffectationIdAndAnneeScolaireId(
+            affectationId,
+            anneeActive.getId()
+    );
+}
 
+    /**
+     * Calcul moyenne étudiant
+     */
+    public double calculerMoyenneEtudiant(
+            Long etudiantId,
+            Integer periode,
+            TypePeriode typePeriode) {
 
-    // NOTES PAR ETUDIANT ET SEMESTRE
-    public List<Note> getNotesEtudiantSemestre(Long etudiantId, int semestre){
-        return noteRepository.findByEtudiantIdAndSemestre(etudiantId, semestre);
-    }
+        List<Note> notes = getNotesEtudiantPeriode(
+                etudiantId,
+                periode,
+                typePeriode
+        );
 
-
-    // NOTES PAR AFFECTATION ET SEMESTRE
-    public List<Note> getNotesAffectationSemestre(Long affectationId, int semestre){
-        return noteRepository.findByAffectationIdAndSemestre(affectationId, semestre);
-    }
-
-
-    // MOYENNE ETUDIANT
-    public double calculerMoyenneEtudiant(Long etudiantId, int semestre){
-
-        List<Note> notes = noteRepository.findByEtudiantIdAndSemestre(etudiantId, semestre);
-
-        double total = 0;
-
-        for(Note n : notes){
-            total += n.getValeur();
+        if (notes.isEmpty()) {
+            return 0;
         }
 
-        return notes.isEmpty() ? 0 : total / notes.size();
+        return notes.stream()
+                .mapToDouble(Note::getValeur)
+                .average()
+                .orElse(0);
     }
-
 }

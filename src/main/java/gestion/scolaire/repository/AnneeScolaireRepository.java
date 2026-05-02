@@ -15,4 +15,6 @@ public interface AnneeScolaireRepository extends JpaRepository<AnneeScolaire, Lo
     @Modifying
 @Query("UPDATE AnneeScolaire a SET a.active = false")
 void desactiverToutes();
+
+
 }

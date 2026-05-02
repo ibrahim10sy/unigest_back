@@ -19,45 +19,45 @@ public class EtudiantController {
 
     // 1️⃣ Créer un étudiant
     @PostMapping
-    public ResponseEntity<Etudiant> creerEtudiant(@RequestBody Etudiant etudiant){
+    public ResponseEntity<Etudiant> creerEtudiant(@RequestBody Etudiant etudiant) {
         return ResponseEntity.ok(etudiantService.creerEtudiant(etudiant));
     }
 
     // 2️⃣ Modifier un étudiant
     @PutMapping("/{id}")
     public ResponseEntity<Etudiant> modifierEtudiant(@PathVariable Long id,
-                                                     @RequestBody Etudiant data){
+            @RequestBody Etudiant data) {
         return ResponseEntity.ok(etudiantService.modifierEtudiant(id, data));
     }
 
     // 3️⃣ Supprimer un étudiant
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerEtudiant(@PathVariable Long id){
+    public ResponseEntity<String> supprimerEtudiant(@PathVariable Long id) {
         etudiantService.supprimerEtudiant(id);
         return ResponseEntity.ok("Étudiant supprimé");
     }
 
     // 4️⃣ Récupérer un étudiant par ID
     @GetMapping("/{id}")
-    public ResponseEntity<Etudiant> getEtudiant(@PathVariable Long id){
+    public ResponseEntity<Etudiant> getEtudiant(@PathVariable Long id) {
         return ResponseEntity.ok(etudiantService.getEtudiant(id));
     }
 
     // 5️⃣ Lister tous les étudiants
     @GetMapping
-    public ResponseEntity<List<Etudiant>> listerEtudiants(){
+    public ResponseEntity<List<Etudiant>> listerEtudiants() {
         return ResponseEntity.ok(etudiantService.listerEtudiants());
     }
 
     // 6️⃣ Récupérer les étudiants d'une classe
     @GetMapping("/classe/{classeId}")
-    public ResponseEntity<List<Etudiant>> getEtudiantsParClasse(@PathVariable Long classeId){
+    public ResponseEntity<List<Etudiant>> getEtudiantsParClasse(@PathVariable Long classeId) {
         return ResponseEntity.ok(etudiantService.getEtudiantsParClasse(classeId));
     }
 
     // 7️⃣ Récupérer un étudiant par matricule
     @GetMapping("/matricule/{matricule}")
-    public ResponseEntity<Etudiant> getEtudiantParMatricule(@PathVariable String matricule){
+    public ResponseEntity<Etudiant> getEtudiantParMatricule(@PathVariable String matricule) {
         return ResponseEntity.ok(etudiantService.getEtudiantParMatricule(matricule));
     }
 }

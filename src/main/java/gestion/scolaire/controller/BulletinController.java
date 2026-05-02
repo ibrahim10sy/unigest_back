@@ -2,71 +2,90 @@ package gestion.scolaire.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import gestion.scolaire.model.Bulletin;
+import gestion.scolaire.model.TypePeriode;
 import gestion.scolaire.service.BulletinService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/bulletins")
+@RequiredArgsConstructor
 public class BulletinController {
 
-    @Autowired
-    private BulletinService bulletinService;
+    private final BulletinService bulletinService;
 
-
-    // générer bulletin
+    /**
+     * Générer un bulletin
+     */
     @PostMapping
     public ResponseEntity<Bulletin> genererBulletin(
             @RequestParam Long etudiantId,
-            @RequestParam int semestre){
+            @RequestParam Integer periode,
+            @RequestParam TypePeriode typePeriode) {
 
         return ResponseEntity.ok(
-                bulletinService.genererBulletin(etudiantId, semestre)
+                bulletinService.genererBulletin(
+                        etudiantId,
+                        periode,
+                        typePeriode
+                )
         );
     }
 
-
-    // bulletin par id
+    /**
+     * Bulletin par id
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Bulletin> getBulletin(@PathVariable Long id){
+    public ResponseEntity<Bulletin> getBulletin(
+            @PathVariable Long id) {
 
-        return ResponseEntity.ok(bulletinService.getBulletin(id));
+        return ResponseEntity.ok(
+                bulletinService.getBulletin(id)
+        );
     }
 
-
-    // bulletins d'un étudiant
+    /**
+     * Tous les bulletins d’un étudiant
+     */
     @GetMapping("/etudiant/{etudiantId}")
     public ResponseEntity<List<Bulletin>> getBulletinsEtudiant(
-            @PathVariable Long etudiantId){
+            @PathVariable Long etudiantId) {
 
         return ResponseEntity.ok(
                 bulletinService.getBulletinsEtudiant(etudiantId)
         );
     }
 
-
-    // bulletin d'un semestre
-    @GetMapping("/etudiant/{etudiantId}/semestre/{semestre}")
-    public ResponseEntity<Bulletin> getBulletinSemestre(
+    /**
+     * Bulletin d’un étudiant pour une période
+     */
+    @GetMapping("/etudiant/{etudiantId}/periode")
+    public ResponseEntity<Bulletin> getBulletinPeriode(
             @PathVariable Long etudiantId,
-            @PathVariable int semestre){
+            @RequestParam Integer periode,
+            @RequestParam TypePeriode typePeriode) {
 
         return ResponseEntity.ok(
-                bulletinService.getBulletinEtudiantSemestre(etudiantId, semestre)
+                bulletinService.getBulletinEtudiantPeriode(
+                        etudiantId,
+                        periode,
+                        typePeriode
+                )
         );
     }
 
-
-    // supprimer
+    /**
+     * Supprimer un bulletin
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerBulletin(@PathVariable Long id){
+    public ResponseEntity<String> supprimerBulletin(
+            @PathVariable Long id) {
 
         bulletinService.supprimerBulletin(id);
 
         return ResponseEntity.ok("Bulletin supprimé");
     }
-
 }

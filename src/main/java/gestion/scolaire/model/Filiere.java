@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @Entity
 public class Filiere {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,10 +21,13 @@ public class Filiere {
     private String nom;
 
     private boolean actif = true;
-    
+
+    private double fraisInscription;
+    private double fraisScolarite;
+
     @ManyToOne
     @JoinColumn(name = "niveau_id")
-    private Niveau niveau; 
+    private Niveau niveau;
 
     @OneToMany(mappedBy = "filiere")
     @JsonIgnore

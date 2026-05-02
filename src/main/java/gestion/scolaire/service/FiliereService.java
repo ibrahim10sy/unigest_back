@@ -26,7 +26,7 @@ public class FiliereService {
 
     // Ajouter une filière
     // Ajouter une filière liée à un niveau
-    public Filiere ajouterFiliere(String nom, Long niveauId) {
+    public Filiere ajouterFiliere(String nom, Long niveauId,double fraisInscription, double fraisScolarite) {
         // On récupère le niveau parent
         Niveau niveau = niveauRepository.findById(niveauId)
                 .orElseThrow(() -> new RuntimeException("Niveau introuvable avec l'ID : " + niveauId));
@@ -34,13 +34,15 @@ public class FiliereService {
         Filiere filiere = new Filiere();
         filiere.setNom(nom);
         filiere.setActif(true);
+        filiere.setFraisInscription(fraisInscription);
+        filiere.setFraisScolarite(fraisScolarite);
         filiere.setNiveau(niveau); // On lie la filière au niveau
 
         return filiereRepository.save(filiere);
     }
 
     // Modifier une filière
-    public Filiere modifierFiliere(Long id, String nom, Boolean actif, Long niveauId) {
+    public Filiere modifierFiliere(Long id, String nom, Boolean actif, Long niveauId, double fraisInscription, double fraisScolarite) {
         Filiere filiere = filiereRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Filière introuvable"));
 
@@ -48,6 +50,10 @@ public class FiliereService {
             filiere.setNom(nom);
         if (actif != null)
             filiere.setActif(actif);
+        if (fraisInscription != 0)
+            filiere.setFraisInscription(fraisInscription);
+        if (fraisScolarite != 0)
+            filiere.setFraisScolarite(fraisScolarite);
 
         // Si on change le niveau de la filière
         if (niveauId != null) {

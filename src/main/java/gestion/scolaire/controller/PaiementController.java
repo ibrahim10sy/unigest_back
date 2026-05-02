@@ -1,7 +1,10 @@
 package gestion.scolaire.controller;
 
+import gestion.scolaire.dto.PaiementResumeDTO;
+import gestion.scolaire.model.Inscription;
 import gestion.scolaire.model.ModePaiement;
 import gestion.scolaire.model.Paiement;
+import gestion.scolaire.repository.InscriptionRepository;
 import gestion.scolaire.service.PaiementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +24,8 @@ public class PaiementController {
 
     @Autowired
     private PaiementService paiementService;
+    @Autowired
+    private InscriptionRepository inscriptionRepository;
 
 
     @Operation(summary = "Effectuer un paiement",
@@ -81,6 +86,14 @@ public class PaiementController {
         return ResponseEntity.ok(
                 paiementService.getPaiementsParEtudiant(etudiantId)
         );
+    }
+@GetMapping("/resume/{inscriptionId}")
+    public PaiementResumeDTO getResume(@PathVariable Long inscriptionId) {
+
+        Inscription inscription = inscriptionRepository.findById(inscriptionId)
+                .orElseThrow(() -> new RuntimeException("Inscription introuvable"));
+
+        return paiementService.calculerResume(inscription);
     }
 
 

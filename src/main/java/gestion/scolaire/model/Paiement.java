@@ -16,7 +16,7 @@ public class Paiement {
     private Long id;
 
     @ManyToOne(optional = false)
-    private Inscription inscription; // lien vers l'année scolaire et la classe
+    private Inscription inscription; 
 
     private double montant;
 
