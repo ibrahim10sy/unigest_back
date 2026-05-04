@@ -23,138 +23,171 @@ import lombok.*;
 @Transactional
 public class NoteService {
 
-    private final NoteRepository noteRepository;
-    private final EtudiantRepository etudiantRepository;
-    private final AffectationRepository affectationRepository;
-    private final AnneeScolaireService anneeScolaireService;
+        private final NoteRepository noteRepository;
+        private final EtudiantRepository etudiantRepository;
+        private final AffectationRepository affectationRepository;
+        private final AnneeScolaireService anneeScolaireService;
 
-    /**
-     * Ajouter une note
-     */
-    public Note ajouterNote(
-            Long etudiantId,
-            Long affectationId,
-            double valeur,
-            TypeNote type,
-            Integer periode,
-            TypePeriode typePeriode) {
+        /**
+         * Ajouter une note
+         */
+        public Note ajouterNote(
+                        Long etudiantId,
+                        Long affectationId,
+                        double valeur,
+                        TypeNote type,
+                        Integer periode,
+                        TypePeriode typePeriode) {
 
-        Etudiant etudiant = etudiantRepository.findById(etudiantId)
-                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
+                Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
 
-        Affectation affectation = affectationRepository.findById(affectationId)
-                .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
+                Affectation affectation = affectationRepository.findById(affectationId)
+                                .orElseThrow(() -> new RuntimeException("Affectation introuvable"));
 
-        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
 
-        Note note = new Note();
-        note.setEtudiant(etudiant);
-        note.setAffectation(affectation);
-        note.setAnneeScolaire(anneeActive);
-        note.setValeur(valeur);
-        note.setType(type);
-        note.setPeriode(periode);
-        note.setTypePeriode(typePeriode);
-        note.setDateEvaluation(LocalDate.now());
+                Note note = new Note();
+                note.setEtudiant(etudiant);
+                note.setAffectation(affectation);
+                note.setAnneeScolaire(anneeActive);
+                note.setValeur(valeur);
+                note.setType(type);
+                note.setPeriode(periode);
+                note.setTypePeriode(typePeriode);
+                note.setDateEvaluation(LocalDate.now());
 
-        return noteRepository.save(note);
-    }
-
-    /**
-     * Modifier une note
-     */
-    public Note modifierNote(
-            Long noteId,
-            double valeur,
-            TypeNote type) {
-
-        Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note introuvable"));
-
-        note.setValeur(valeur);
-        note.setType(type);
-
-        return noteRepository.save(note);
-    }
-
-    /**
-     * Supprimer une note
-     */
-    public void supprimerNote(Long noteId) {
-        noteRepository.deleteById(noteId);
-    }
-
-    /**
-     * Récupérer une note
-     */
-    public Note getNoteById(Long noteId) {
-        return noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note introuvable"));
-    }
-
-    /**
-     * Notes d’un étudiant (année active)
-     */
-    public List<Note> getNotesEtudiant(Long etudiantId) {
-        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
-
-        return noteRepository.findByEtudiantIdAndAnneeScolaireId(
-                etudiantId,
-                anneeActive.getId()
-        );
-    }
-
-    /**
-     * Notes d’un étudiant par période
-     */
-    public List<Note> getNotesEtudiantPeriode(
-            Long etudiantId,
-            Integer periode,
-            TypePeriode typePeriode) {
-
-        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
-
-        return noteRepository
-                .findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
-                        etudiantId,
-                        anneeActive.getId(),
-                        periode,
-                        typePeriode
-                );
-    }
-
-
-    public List<Note> getNotesParAffectation(Long affectationId) {
-
-    AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
-
-    return noteRepository.findByAffectationIdAndAnneeScolaireId(
-            affectationId,
-            anneeActive.getId()
-    );
-}
-
-    /**
-     * Calcul moyenne étudiant
-     */
-    public double calculerMoyenneEtudiant(
-            Long etudiantId,
-            Integer periode,
-            TypePeriode typePeriode) {
-
-        List<Note> notes = getNotesEtudiantPeriode(
-                etudiantId,
-                periode,
-                typePeriode
-        );
-
-        if (notes.isEmpty()) {
-            return 0;
+                return noteRepository.save(note);
         }
 
-        return notes.stream()
-                .mapToDouble(Note::getValeur)
-                .average()
-                .orElse(0);
-    }
+        /**
+         * Modifier une note
+         */
+        public Note modifierNote(
+                        Long noteId,
+                        double valeur,
+                        TypeNote type) {
+
+                Note note = noteRepository.findById(noteId)
+                                .orElseThrow(() -> new RuntimeException("Note introuvable"));
+
+                note.setValeur(valeur);
+                note.setType(type);
+
+                return noteRepository.save(note);
+        }
+
+        /**
+         * Supprimer une note
+         */
+        public void supprimerNote(Long noteId) {
+                noteRepository.deleteById(noteId);
+        }
+
+        /**
+         * Récupérer une note
+         */
+        public Note getNoteById(Long noteId) {
+                return noteRepository.findById(noteId)
+                                .orElseThrow(() -> new RuntimeException("Note introuvable"));
+        }
+
+        /**
+         * Notes d’un étudiant (année active)
+         */
+        public List<Note> getNotesEtudiant(Long etudiantId) {
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+                return noteRepository.findByEtudiantIdAndAnneeScolaireId(
+                                etudiantId,
+                                anneeActive.getId());
+        }
+
+        /**
+         * Notes d’un étudiant par période
+         */
+        public List<Note> getNotesEtudiantPeriode(
+                        Long etudiantId,
+                        Integer periode,
+                        TypePeriode typePeriode) {
+
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+                return noteRepository
+                                .findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+                                                etudiantId,
+                                                anneeActive.getId(),
+                                                periode,
+                                                typePeriode);
+        }
+
+        public List<Note> getNotesParAffectation(Long affectationId) {
+
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+                return noteRepository.findByAffectationIdAndAnneeScolaireId(
+                                affectationId,
+                                anneeActive.getId());
+        }
+
+        public List<Note> getNotesParPeriode(
+                        Long anneeScolaireId,
+                        Integer periode,
+                        TypePeriode typePeriode) {
+
+                return noteRepository.findByAnneeScolaireIdAndPeriodeAndTypePeriode(
+                                anneeScolaireId,
+                                periode,
+                                typePeriode);
+        }
+
+        public List<Note> getNotesParPeriodeActive(
+                        Integer periode,
+                        TypePeriode typePeriode) {
+
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+                return noteRepository.findByAnneeScolaireIdAndPeriodeAndTypePeriode(
+                                anneeActive.getId(),
+                                periode,
+                                typePeriode);
+        }
+
+        public List<Note> getNotesParAffectationEtPeriode(
+                        Long affectationId,
+                        Integer periode,
+                        TypePeriode typePeriode) {
+
+                AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+                return noteRepository
+                                .findByAffectationIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+                                                affectationId,
+                                                anneeActive.getId(),
+                                                periode,
+                                                typePeriode);
+        }
+
+        /**
+         * Calcul moyenne étudiant
+         */
+        public double calculerMoyenneEtudiant(
+                        Long etudiantId,
+                        Integer periode,
+                        TypePeriode typePeriode) {
+
+                List<Note> notes = getNotesEtudiantPeriode(
+                                etudiantId,
+                                periode,
+                                typePeriode);
+
+                if (notes.isEmpty()) {
+                        return 0;
+                }
+
+                return notes.stream()
+                                .mapToDouble(Note::getValeur)
+                                .average()
+                                .orElse(0);
+        }
 }

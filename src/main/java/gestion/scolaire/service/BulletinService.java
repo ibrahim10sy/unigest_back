@@ -43,30 +43,37 @@ public class BulletinService {
         // Année scolaire active
         AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
 
-        // Récupérer inscription active de l'étudiant
+        // Inscription active de l’étudiant
         Inscription inscriptionActive = etudiant.getInscription()
                 .stream()
-                .filter(inscription -> inscription.getAnneeScolaire().getId().equals(anneeActive.getId()))
+                .filter(inscription ->
+                        inscription.getAnneeScolaire().getId()
+                                .equals(anneeActive.getId()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Aucune inscription active trouvée"));
+                .orElseThrow(() ->
+                        new RuntimeException("Aucune inscription active trouvée"));
 
         // Vérifier si bulletin existe déjà
-        Optional<Bulletin> bulletinExistant = bulletinRepository
-                .findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
-                        etudiantId,
-                        anneeActive.getId(),
-                        periode,
-                        typePeriode);
+        Optional<Bulletin> bulletinExistant =
+                bulletinRepository
+                        .findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+                                etudiantId,
+                                anneeActive.getId(),
+                                periode,
+                                typePeriode
+                        );
 
         if (bulletinExistant.isPresent()) {
-            throw new RuntimeException("Le bulletin existe déjà pour cette période");
+            throw new RuntimeException(
+                    "Le bulletin existe déjà pour cette période");
         }
 
-        // Calcul moyenne
+        // Calcul moyenne générale
         double moyenne = noteService.calculerMoyenneEtudiant(
                 etudiantId,
                 periode,
-                typePeriode);
+                typePeriode
+        );
 
         // Création bulletin
         Bulletin bulletin = new Bulletin();
@@ -87,7 +94,8 @@ public class BulletinService {
     @Transactional(readOnly = true)
     public Bulletin getBulletin(Long bulletinId) {
         return bulletinRepository.findById(bulletinId)
-                .orElseThrow(() -> new RuntimeException("Bulletin introuvable"));
+                .orElseThrow(() ->
+                        new RuntimeException("Bulletin introuvable"));
     }
 
     /**
@@ -100,7 +108,6 @@ public class BulletinService {
 
     /**
      * Bulletin d’un étudiant pour une période précise
-     * (année scolaire active)
      */
     @Transactional(readOnly = true)
     public Bulletin getBulletinEtudiantPeriode(
@@ -115,24 +122,44 @@ public class BulletinService {
                         etudiantId,
                         anneeActive.getId(),
                         periode,
-                        typePeriode)
-                .orElseThrow(() -> new RuntimeException("Bulletin introuvable"));
+                        typePeriode
+                )
+                .orElseThrow(() ->
+                        new RuntimeException("Bulletin introuvable"));
     }
 
     /**
-     * Bulletins d’une classe pour l’année active
+     * Bulletins d’une classe sur l’année active
      */
     @Transactional(readOnly = true)
     public List<Bulletin> getBulletinsClasse(Long classeId) {
 
         AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
 
-        Classe classe = new Classe();
-        classe.setId(classeId);
+        return bulletinRepository.findByClasseIdAndAnneeScolaireId(
+                classeId,
+                anneeActive.getId()
+        );
+    }
 
-        return bulletinRepository.findByClasseAndAnneeScolaire(
-                classe,
-                anneeActive);
+    /**
+     * Bulletins d’une classe par période
+     */
+    @Transactional(readOnly = true)
+    public List<Bulletin> getBulletinsClassePeriode(
+            Long classeId,
+            Integer periode,
+            TypePeriode typePeriode) {
+
+        AnneeScolaire anneeActive = anneeScolaireService.getAnneeActive();
+
+        return bulletinRepository
+                .findByClasseIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+                        classeId,
+                        anneeActive.getId(),
+                        periode,
+                        typePeriode
+                );
     }
 
     /**
@@ -146,12 +173,15 @@ public class BulletinService {
         Bulletin bulletin = getBulletinEtudiantPeriode(
                 etudiantId,
                 periode,
-                typePeriode);
+                typePeriode
+        );
 
-        double nouvelleMoyenne = noteService.calculerMoyenneEtudiant(
-                etudiantId,
-                periode,
-                typePeriode);
+        double nouvelleMoyenne =
+                noteService.calculerMoyenneEtudiant(
+                        etudiantId,
+                        periode,
+                        typePeriode
+                );
 
         bulletin.setMoyenneGenerale(nouvelleMoyenne);
         bulletin.setDateGeneration(LocalDate.now());
@@ -160,12 +190,11 @@ public class BulletinService {
     }
 
     /**
-     * Supprimer bulletin
+     * Supprimer un bulletin
      */
     public void supprimerBulletin(Long bulletinId) {
 
-        Bulletin bulletin = bulletinRepository.findById(bulletinId)
-                .orElseThrow(() -> new RuntimeException("Bulletin introuvable"));
+        Bulletin bulletin = getBulletin(bulletinId);
 
         bulletinRepository.delete(bulletin);
     }

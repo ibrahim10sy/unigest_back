@@ -55,10 +55,13 @@ public class FileUploade {
                 return "sftp://" + SFTP_USER + "@" + SFTP_SERVER + remoteFilePath;
             } catch (JSchException | SftpException e) {
                 retries--;
-                if (retries == 0) throw new Exception("Erreur lors de la connexion SFTP : " + e.getMessage(), e);
+                if (retries == 0)
+                    throw new Exception("Erreur lors de la connexion SFTP : " + e.getMessage(), e);
             } finally {
-                if (sftp != null && sftp.isConnected()) sftp.exit();
-                if (session != null && session.isConnected()) session.disconnect();
+                if (sftp != null && sftp.isConnected())
+                    sftp.exit();
+                if (session != null && session.isConnected())
+                    session.disconnect();
             }
         }
         throw new Exception("Échec du téléchargement après plusieurs tentatives.");
@@ -81,15 +84,18 @@ public class FileUploade {
                 }
             } catch (JSchException | SftpException e) {
                 retries--;
-                if (retries == 0) throw new IOException("Erreur lors de la récupération SFTP : " + e.getMessage(), e);
+                if (retries == 0)
+                    throw new IOException("Erreur lors de la récupération SFTP : " + e.getMessage(), e);
             } finally {
-                if (sftp != null && sftp.isConnected()) sftp.exit();
-                if (session != null && session.isConnected()) session.disconnect();
+                if (sftp != null && sftp.isConnected())
+                    sftp.exit();
+                if (session != null && session.isConnected())
+                    session.disconnect();
             }
         }
         throw new IOException("Échec de récupération du fichier après plusieurs tentatives.");
     }
 
-    // Méthodes similaires pour les images ou audios : 
-   
+    // Méthodes similaires pour les images ou audios :
+
 }

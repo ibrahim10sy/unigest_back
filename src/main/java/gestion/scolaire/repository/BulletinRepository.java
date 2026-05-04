@@ -14,23 +14,35 @@ import gestion.scolaire.model.TypePeriode;
 @Repository
 public interface BulletinRepository extends JpaRepository<Bulletin, Long> {
 
-    List<Bulletin> findByEtudiant(Etudiant etudiant);
-
-    List<Bulletin> findByClasseAndAnneeScolaire(
-            Classe classe,
-            AnneeScolaire annee
-    );
-
     List<Bulletin> findByEtudiantId(Long etudiantId);
 
-    Optional<Bulletin> findByEtudiantIdAndAnneeScolaireIdAndPeriode(
+    List<Bulletin> findByClasseId(Long classeId);
+
+    List<Bulletin> findByEtudiantIdAndAnneeScolaireId(
             Long etudiantId,
-            Long anneeId,
-            Integer periode
+            Long anneeScolaireId
     );
 
     Optional<Bulletin> findByEtudiantIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
             Long etudiantId,
+            Long anneeScolaireId,
+            Integer periode,
+            TypePeriode typePeriode
+    );
+
+    List<Bulletin> findByClasseIdAndAnneeScolaireId(
+            Long classeId,
+            Long anneeScolaireId
+    );
+
+    List<Bulletin> findByClasseIdAndAnneeScolaireIdAndPeriodeAndTypePeriode(
+            Long classeId,
+            Long anneeScolaireId,
+            Integer periode,
+            TypePeriode typePeriode
+    );
+
+    List<Bulletin> findByAnneeScolaireIdAndPeriodeAndTypePeriode(
             Long anneeScolaireId,
             Integer periode,
             TypePeriode typePeriode
